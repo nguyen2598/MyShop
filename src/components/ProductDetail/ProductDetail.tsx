@@ -9,12 +9,15 @@ import {
     Platform,
     StatusBar,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
 import Swiper from 'react-native-swiper';
 import Category from '../Category/Category';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
+import IconF from 'react-native-vector-icons/FontAwesome5';
+
+import product from '@/src/api/product';
 const { width, height } = getWidthHeightScreen;
 const data = [
     {
@@ -60,6 +63,14 @@ const data = [
         number_sold: 2800,
     },
 ];
+interface IProduct {
+    id: number;
+    title: string;
+    description: string;
+    images: string;
+    price: number;
+    quantity_sold: number;
+}
 export default function ProductDetail() {
     const route = useRoute();
     const { id, otherParams }: any = route.params;
@@ -67,10 +78,19 @@ export default function ProductDetail() {
     const goToBack = () => {
         navigation.goBack();
     };
+    const [productData, setProductData] = useState<IProduct>();
+    useEffect(() => {
+        const getData = async () => {
+            const response: any = await product.getProductDetail(id);
+            if (response?.data?.err === 0) {
+                setProductData(response?.data?.response);
+            }
+        };
+        getData();
+    }, [id]);
     return (
-        <View style={{ backgroundColor: '#eeeeee', flex: 1,flexDirection:'column' }}>
+        <View style={{ backgroundColor: '#eeeeee', flex: 1, flexDirection: 'column' }}>
             <TouchableOpacity onPress={goToBack} style={styles.backPage}>
-            
                 <IconAntDesign name="arrowleft" size={36} color="#ffffff" />
             </TouchableOpacity>
             <ScrollView>
@@ -83,46 +103,55 @@ export default function ProductDetail() {
                                 shadowColor: '#2e272b',
                             }}
                         >
-                            <Swiper style={styles.wrapper}>
-                                <View style={styles.slide1}>
-                                    <Image
-                                        style={styles.image_banner}
-                                        source={{
-                                            uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
-                                        }}
-                                    ></Image>
-                                </View>
-                                <View style={styles.slide2}>
-                                    <Image
-                                        style={styles.image_banner}
-                                        source={{
-                                            uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
-                                        }}
-                                    ></Image>
-                                </View>
-                                <View style={styles.slide3}>
-                                    <Image
-                                        style={styles.image_banner}
-                                        source={{
-                                            uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
-                                        }}
-                                    ></Image>
-                                </View>
-                            </Swiper>
+                            {productData && (
+                                <Swiper style={styles.wrapper}>
+                                    {JSON.parse(productData?.images)?.map((item: string, index: number) => (
+                                        <View style={styles.slide1} key={index}>
+                                            <Image
+                                                style={styles.image_banner}
+                                                source={{
+                                                    uri: item,
+                                                }}
+                                            ></Image>
+                                        </View>
+                                    ))}
+                                    <View style={styles.slide1}>
+                                        <Image
+                                            style={styles.image_banner}
+                                            source={{
+                                                uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
+                                            }}
+                                        ></Image>
+                                    </View>
+                                    <View style={styles.slide2}>
+                                        <Image
+                                            style={styles.image_banner}
+                                            source={{
+                                                uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
+                                            }}
+                                        ></Image>
+                                    </View>
+                                    <View style={styles.slide3}>
+                                        <Image
+                                            style={styles.image_banner}
+                                            source={{
+                                                uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
+                                            }}
+                                        ></Image>
+                                    </View>
+                                </Swiper>
+                            )}
                         </View>
                         <View style={styles.wrapperPr}>
                             <View style={styles.priceWrapper}>
                                 <Text style={styles.priced}>₫</Text>
-                                <Text style={styles.price}>38.000</Text>
+                                <Text style={styles.price}>{productData?.price}.000</Text>
                             </View>
                             <View style={styles.priceWrapper}>
-                                <Text style={styles.title}>
-                                    Túi Handmade Tự Đan DIY Đầy Đủ Phụ kiện dây xích chắc chắn -Túi dệt len ​​thủ công
-                                    hot TIKTOK
-                                </Text>
+                                <Text style={styles.title}>{productData?.title}</Text>
                             </View>
                             <View style={styles.number_sold}>
-                                <Text>Đã bán 439</Text>
+                                <Text>Đã bán {productData?.quantity_sold}</Text>
                             </View>
                         </View>
                     </View>
@@ -200,38 +229,40 @@ export default function ProductDetail() {
                                 <Text style={styles.contentHeaderText}>Mô tả sản phẩm</Text>
                             </View>
                             <View style={styles.contentBody}>
-                                <Text style={styles.contentBodyText}>
-                                    Túi handmade tự đan là sản phẩm phù hợp với chị em có sở thích đan móc, có thể đan
-                                    để dành cho bản thân hoặc tặng cho những người thân yêu như một món quà ý nghĩa. Đặc
-                                    biệt các bạn nam cũng có thể mua để đan tặng người yêu, chắc chắn sẽ làm các nàng
-                                    ưng ý. Ngày nay, túi đeo chéo là món thời trang không thể thiếu đối với chị em phụ
-                                    nữ bởi sự gọn nhẹ, linh hoạt, có thể cầm hay đeo vai 💕BỘ NGUYÊN LIỆU BAO GỒM: -
-                                    Canvas nhựa (có thể là 1 canvas liền hoặc 3 canvas rời) - 1 kim nhựa - 1 dây đeo, 1
-                                    mác nai - 2 khoen chữ D, 2 nút khóa - Len các loại
-                                </Text>
+                                <Text style={styles.contentBodyText}>{productData?.description}</Text>
                             </View>
                         </View>
                     </View>
                 </View>
             </ScrollView>
+            <View style={styles.navFooter}>
+                <View style={styles.navFooterIcon}>
+                    <IconF name="cart-plus" size={24} color="#ffffff" />
+                    <Text style={styles.navFooterText}>Thêm vào giỏ hàng</Text>
+                </View>
+                <View style={styles.navFooterRight}>
+                    <Text style={styles.navFooterTextRight}>Mua ngay</Text>
+                </View>
+            </View>
         </View>
     );
 }
 const styles = StyleSheet.create({
     backPage: {
         position: 'absolute',
-        top:  Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-        left:10,
+        top: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+        left: 10,
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        borderRadius:200,
-        padding:4,
+        borderRadius: 200,
+        padding: 4,
         // width: 200,
         // height: 200,
-        zIndex:999999
+        zIndex: 999999,
         // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     conatiner: {
         backgroundColor: '#eeeeee',
+        marginBottom: 40,
         // flex: 1,
     },
     wrapper: {
@@ -365,5 +396,35 @@ const styles = StyleSheet.create({
     },
     number_soldImage: {
         fontSize: 12,
+    },
+    navFooter: {
+        position: 'absolute',
+        bottom: 0,
+        flexDirection: 'row',
+        width: '100%',
+    },
+
+    navFooterIcon: {
+        backgroundColor: '#28b08a',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 4,
+        paddingLeft: 20,
+        paddingRight: 20,
+    },
+    navFooterText: {
+        color: '#ffffff',
+        fontSize: 12,
+    },
+    navFooterRight: {
+        backgroundColor: '#fc5b31',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    navFooterTextRight: {
+        color: '#ffffff',
+        fontSize: 20,
     },
 });

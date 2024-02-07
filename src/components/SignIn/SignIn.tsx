@@ -3,19 +3,22 @@ import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
 import { Link } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { LoginApi } from '@/src/redux/slice';
 const { width, height } = getWidthHeightScreen;
 type FormValues = {
     email: string;
     password: string;
 };
 export default function SignIn() {
+    const dispatch = useDispatch()
     const {
         control,
         handleSubmit,
         formState: { errors },
     } = useForm<FormValues>();
     const onSubmit = (data: FormValues) => {
-        console.log(data);
+        dispatch(LoginApi(data));
     };
     return (
         <View

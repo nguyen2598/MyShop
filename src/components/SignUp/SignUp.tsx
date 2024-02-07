@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
 import { Link } from '@react-navigation/native';
+import ConfirmRegister from '../ConfirmRegister/ConfirmRegister';
+import auth from '@/src/api/auth';
 const { width, height } = getWidthHeightScreen;
 interface RegisterFormProps {
     name: string;
@@ -12,6 +14,9 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm() {
+    const [isConfirmed, setIsConfirmed] = useState<Boolean>(false);
+    const [messEmail, setMessEmail] = useState<string>('');
+    const [dataRes, setDataRes] = useState<string>('');
     const {
         control,
         handleSubmit,
@@ -19,135 +24,163 @@ export default function RegisterForm() {
         getValues,
     } = useForm<RegisterFormProps>();
 
-    const onSubmit = (data: RegisterFormProps) => {
-        console.log(data);
+    const onSubmit = async (data: RegisterFormProps) => {
+        try {
+            const response: any = await auth.firstRegister(data);
+            console.log(response);
+            if (response?.data?.err === 1) {
+                setMessEmail(response?.data?.msg);
+                setIsConfirmed(true);
+                setDataRes(response?.data?.data);
+                // return <ConfirmRegister dataCode={response?.data?.data} />;
+            } else {
+                setMessEmail(response?.data?.msg);
+            }
+        } catch (error) {
+            setMessEmail('Kết nối bị mất');
+        }
     };
 
     return (
-        <View
-            style={{
-                marginTop: 80,
-                display: 'flex',
-                flexDirection: 'column',
-                // justifyContent:'center',
-                alignItems: 'center',
-            }}
-        >
-          <View>
-                <Image source={require('../../../assets/register.png')} style={{ height: 60, width: 180 }}></Image>
-            </View>
-            <View>
-                <Controller
-                    control={control}
-                    render={({ field }) => (
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder="Name"
-                            onChangeText={field.onChange}
-                            value={field.value}
-                        />
-                    )}
-                    name="name"
-                    rules={{
-                        required: 'Vui lòng nhập Tên',
-                        pattern: {
-                            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/i,
-                            message: 'Tên có đủ chữ hoa-thường-số',
-                        },
+        <>
+            {isConfirmed ? (
+                <ConfirmRegister dataCode={dataRes} />
+            ) : (
+                <View
+                    style={{
+                        marginTop: 80,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        // justifyContent:'center',
+                        alignItems: 'center',
                     }}
-                />
-                <View style={{}}>
-                    <Text style={styles.spanErr}>{errors.name ? errors.name.message : ''}</Text>
-                </View>
-            </View>
-            
-
-            <View>
-                <Controller
-                    control={control}
-                    render={({ field }) => (
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder="Email"
-                            onChangeText={field.onChange}
-                            value={field.value}
+                >
+                    <View>
+                        <Image
+                            source={require('../../../assets/register.png')}
+                            style={{ height: 60, width: 180 }}
+                        ></Image>
+                    </View>
+                    <View>
+                        <Controller
+                            control={control}
+                            render={({ field }) => (
+                                <TextInput
+                                    style={styles.textInput}
+                                    placeholder="Name"
+                                    onChangeText={field.onChange}
+                                    value={field.value}
+                                />
+                            )}
+                            name="name"
+                            rules={{
+                                required: 'Vui lòng nhập Tên',
+                                pattern: {
+                                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/i,
+                                    message: 'Tên có đủ chữ hoa-thường-số',
+                                },
+                            }}
                         />
-                    )}
-                    name="email"
-                    rules={{
-                        required: 'Vui lòng nhập email',
-                        pattern: {
-                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
-                            message: 'Email có dạng abc@gmail.com',
-                        },
-                    }}
-                />
-                <View style={{}}>
-                    <Text style={styles.spanErr}>{errors.email ? errors.email.message : ''}</Text>
-                </View>
-            </View>
+                        <View style={{}}>
+                            <Text style={styles.spanErr}>{errors.name ? errors.name.message : ''}</Text>
+                        </View>
+                    </View>
 
-            <View>
-                <Controller
-                    control={control}
-                    render={({ field }) => (
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder="Mật khẩu"
-                            secureTextEntry
-                            onChangeText={field.onChange}
-                            value={field.value}
+                    <View>
+                        <Controller
+                            control={control}
+                            render={({ field }) => (
+                                <TextInput
+                                    style={styles.textInput}
+                                    placeholder="Email"
+                                    onChangeText={(text) => {
+                                        field.onChange(text);
+                                        setMessEmail('');
+                                    }}
+                                    value={field.value}
+                                />
+                            )}
+                            name="email"
+                            rules={{
+                                required: 'Vui lòng nhập email',
+                                pattern: {
+                                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
+                                    message: 'Email có dạng abc@gmail.com',
+                                },
+                            }}
                         />
-                    )}
-                    name="password"
-                    rules={{
-                        required: 'Vui lòng nhập mật khẩu',
-                        minLength: {
-                            value: 6,
-                            message: 'Mật khẩu phải có ít nhất 6 ký tự',
-                        },
-                    }}
-                />
-                <View>
-                    <Text style={styles.spanErr}>{errors.password ? errors.password.message : ''}</Text>
-                </View>
-            </View>
+                        <View style={{}}>
+                            <Text style={styles.spanErr}>
+                                {messEmail?.length > 0 ? messEmail : errors.email ? errors.email.message : ''}
+                            </Text>
+                        </View>
+                    </View>
 
-            <View>
-                <Controller
-                    control={control}
-                    render={({ field }) => (
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder="Xác nhận mật khẩu"
-                            secureTextEntry
-                            onChangeText={field.onChange}
-                            value={field.value}
+                    <View>
+                        <Controller
+                            control={control}
+                            render={({ field }) => (
+                                <TextInput
+                                    style={styles.textInput}
+                                    placeholder="Mật khẩu"
+                                    secureTextEntry
+                                    onChangeText={field.onChange}
+                                    value={field.value}
+                                />
+                            )}
+                            name="password"
+                            rules={{
+                                required: 'Vui lòng nhập mật khẩu',
+                                minLength: {
+                                    value: 6,
+                                    message: 'Mật khẩu phải có ít nhất 6 ký tự',
+                                },
+                            }}
                         />
-                    )}
-                    name="confirmPassword"
-                    rules={{
-                        required: 'Vui lòng nhập lại mật khẩu',
-                        validate: (value) =>{
-                          return value === getValues('password') || 'Mật khẩu xác nhận không khớp';
-                      },
-                    }}
-                />
-                <View>
-                    <Text style={styles.spanErr}>{errors.confirmPassword ? errors.confirmPassword.message : ''}</Text>
-                </View>
-            </View>
-            <View style={styles.redirect}>
-                <Text>Đã có tài khoản?</Text>
-                <Link to={{ screen: 'login', params: { id: 'jane' } }} style={styles.linkText}>
-                    Đăng nhập
-                </Link>
-            </View>
+                        <View>
+                            <Text style={styles.spanErr}>{errors.password ? errors.password.message : ''}</Text>
+                        </View>
+                    </View>
 
-            <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-                <Text style={styles.btn}>Đăng ký</Text>
-            </TouchableOpacity>
-        </View>
+                    <View>
+                        <Controller
+                            control={control}
+                            render={({ field }) => (
+                                <TextInput
+                                    style={styles.textInput}
+                                    placeholder="Xác nhận mật khẩu"
+                                    secureTextEntry
+                                    onChangeText={field.onChange}
+                                    value={field.value}
+                                />
+                            )}
+                            name="confirmPassword"
+                            rules={{
+                                required: 'Vui lòng nhập lại mật khẩu',
+                                validate: (value) => {
+                                    return value === getValues('password') || 'Mật khẩu xác nhận không khớp';
+                                },
+                            }}
+                        />
+                        <View>
+                            <Text style={styles.spanErr}>
+                                {errors.confirmPassword ? errors.confirmPassword.message : ''}
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={styles.redirect}>
+                        <Text>Đã có tài khoản?</Text>
+                        <Link to={{ screen: 'login', params: { id: 'jane' } }} style={styles.linkText}>
+                            Đăng nhập
+                        </Link>
+                    </View>
+
+                    <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+                        <Text style={styles.btn}>Đăng ký</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+        </>
     );
 }
 const styles = StyleSheet.create({

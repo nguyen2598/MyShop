@@ -7,12 +7,13 @@ export default function Header({ navigation }: any) {
     return (
       // <SafeAreaView style={styles.AndroidSafeArea}>
 
-        <View style={{...styles.AndroidSafeArea, flexDirection: 'column', justifyContent: 'space-between', paddingHorizontal: 16 ,position:'relative' }}>
+        <View style={{...styles.AndroidSafeArea, flexDirection: 'column', justifyContent: 'space-between',position:'relative' }}>
             <View style={styles.container}>
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}>
-                    <Text style={styles.navIcon}> <IconFontAwesome name="bars" size={30} color="#cccccc" /></Text>
+                    <Text style={styles.navIcon}> <IconFontAwesome name="bars" size={30} color="#ffffff" /></Text>
                 </TouchableOpacity>
-                <Text style={styles.nameText}>Wearing a Dress</Text>
+                <View style={styles.wrapperText}></View>
+                <Text style={styles.nameText}>Trang chủ </Text>
             </View>
             {/* <TextInput placeholder="useless placeholder" style={styles.searchInput}/> */}
             {/* Add other header components as needed */}
@@ -23,21 +24,30 @@ export default function Header({ navigation }: any) {
 const styles = StyleSheet.create({
   AndroidSafeArea:{
     // flex: 1,
-    backgroundColor: "white",
-    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+    backgroundColor: "#28b08a",
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    padding:10,
+    paddingBottom:16
   },
   container:{
     // marginTop: 32,
     flexDirection:'row',
-    // justifyContent:'space-between'
+    // justifyContent:'space-between',
     alignItems: 'center',
     gap:20
   },
   navIcon:{
 
   },
+  wrapperText:{
+    // flex:1,
+    // flexDirection:'row',
+    // justifyContent: 'center',
+  },
   nameText:{
-
+fontSize:20,
+fontWeight:'900',
+color:'#fff'
   },
   searchInput:{
 borderColor:'#cccccc',

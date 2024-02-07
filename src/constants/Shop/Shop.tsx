@@ -10,10 +10,9 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
-import product from '@/src/api/product';
 const data = [
     {
         image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
@@ -82,9 +81,8 @@ const data = [
         number_sold: 2800,
     },
 ];
-export default function Search() {
+export default function Shop() {
     const navigation: any = useNavigation();
-    const [text, setText] = useState<string>('');
     const goToBack = () => {
         navigation.goBack();
     };
@@ -105,34 +103,16 @@ export default function Search() {
         price,
         number_sold,
     } = styles;
-
-    const handleInputSubmit = async (text: string) => {
-        const query = `?query=${text}`;
-        try {
-            const response = await product.getSearchProduct(query);
-        } catch (error) {}
-    };
     return (
         // <ScrollView style={{ flex: 1, backgroundColor: 'blue' }}>
         <View style={styles.contaner}>
             <View style={styles.headerwrapper}>
-                <View style={styles.headerSearch}>
+                <View style={styles.headerShop}>
                     <TouchableOpacity onPress={goToBack}>
-                        <IconAntDesign name="arrowleft" size={36} color="#28b08a" />
+                        <IconAntDesign name="arrowleft" size={36} color="#ffffff" />
                     </TouchableOpacity>
-                    <View style={styles.searchwrapper}>
-                        <View style={styles.searchwrapperinput}>
-                            <TextInput
-                                style={styles.searchinput}
-                                placeholder="Tìm shop t"
-                                onChangeText={setText}
-                                onSubmitEditing={() => {
-                                    console.log(text);
-                                    handleInputSubmit(text);
-                                }}
-                                value={text}
-                            />
-                        </View>
+                    <View style={styles.Shopwrapper}>
+                        <Text style={styles.Shopwrapperinput}>Sản phẩm</Text>
                     </View>
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -143,8 +123,8 @@ export default function Search() {
                         <View style={styles.navmenuItem}>
                             <Text style={styles.navitemText}>Bán chạy</Text>
                         </View>
-                        {/*<View style={styles.navmenuItem}>
-                             <Text style={styles.navitemText}>Túi Handmade</Text>
+                        <View style={styles.navmenuItem}>
+                            <Text style={styles.navitemText}>Túi Handmade</Text>
                         </View>
                         <View style={styles.navmenuItem}>
                             <Text style={styles.navitemText}>Quần áo nữ</Text>
@@ -158,7 +138,7 @@ export default function Search() {
 
                         <View style={styles.navmenuItem}>
                             <Text style={styles.navitemText}>Túi xách nữ</Text>
-                        </View> */}
+                        </View>
                     </View>
                 </ScrollView>
             </View>
@@ -214,21 +194,23 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
-    headerSearch: {
+    headerShop: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
         gap: 16,
+        backgroundColor: 'rgb(40, 176, 138)',
     },
-    searchwrapper: {
-        padding: 8,
-        borderWidth: 1,
-        borderColor: '#ccc',
+    Shopwrapper: {
+        // padding: 8,
         flex: 1,
-        borderRadius: 8,
     },
-    searchwrapperinput: {},
-    searchinput: {
+    Shopwrapperinput: {
+        fontSize: 20,
+        fontWeight: '900',
+        color: '#ffffff',
+    },
+    Shopinput: {
         fontSize: 20,
     },
     navmenu: {
