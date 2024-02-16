@@ -8,9 +8,10 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 
 import Main from '../Main/Main';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '@/src/redux/slice';
+import { getLogout, logout } from '@/src/redux/slice';
 const CustomDrawerContent = (props: any) => {
     const { isLoggedIn } = useSelector((state: any) => state.auth);
+    const { currentData } = useSelector((state: any) => state.user);
     const dispatch = useDispatch();
     return (
         <DrawerContentScrollView {...props}>
@@ -18,11 +19,11 @@ const CustomDrawerContent = (props: any) => {
             <View style={{ justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
                 <Image
                     source={{
-                        uri: 'https://scontent.fhan14-4.fna.fbcdn.net/v/t39.30808-6/424860939_1553602645478453_4799417691646203429_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=c42490&_nc_eui2=AeFXEzSVHnQ5WvNsc0hL6pYyKJPSdkkzaZIok9J2STNpkhtChLuoPjKWNdq-jnL39jm70-uEMRD583kF-1TvZ1mT&_nc_ohc=GfVxGw1dxU0AX_wNB4H&_nc_ht=scontent.fhan14-4.fna&oh=00_AfD79_H19yP1UTnr_7rVLOGkOH0gDijqTITqkEwKGDeHlQ&oe=65C0D23A',
+                        uri: currentData?.avatar,
                     }}
                     style={{ width: 120, height: 120, borderRadius: 60 }}
                 />
-                <Text style={{ paddingTop: 20 }}>Dang Dinh Nguyen</Text>
+                <Text style={{ paddingTop: 20 }}>{currentData?.name}</Text>
             </View>
 
             {/* Phần danh sách các mục trong Drawer */}
@@ -80,7 +81,13 @@ const CustomDrawerContent = (props: any) => {
       /> */}
 
             {isLoggedIn && (
-                <TouchableOpacity style={styles.boxItem} onPress={() => dispatch(logout(''))}>
+                <TouchableOpacity
+                    style={styles.boxItem}
+                    onPress={() => {
+                        dispatch(getLogout(''));
+                        dispatch(logout(''));
+                    }}
+                >
                     <IconFontAwesome name="sign-out" size={30} color="#cccccc" />
                     <Text>Đăng xuất</Text>
                 </TouchableOpacity>

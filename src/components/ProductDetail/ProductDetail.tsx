@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     Platform,
     StatusBar,
+    Button,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -18,6 +19,9 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconF from 'react-native-vector-icons/FontAwesome5';
 
 import product from '@/src/api/product';
+import Toast from '../Toast/Toast';
+import cart from '@/src/api/cart';
+import { useSelector } from 'react-redux';
 const { width, height } = getWidthHeightScreen;
 const data = [
     {
@@ -71,7 +75,15 @@ interface IProduct {
     price: number;
     quantity_sold: number;
 }
+interface ICartItem {
+    cart_code: string | null;
+    user_id: number | null;
+    product_id: number | undefined;
+}
 export default function ProductDetail() {
+    const { currentData } = useSelector((state: any) => state.user);
+    const [showToast, setShowToast] = useState(false);
+
     const route = useRoute();
     const { id, otherParams }: any = route.params;
     const navigation: any = useNavigation();
@@ -88,6 +100,16 @@ export default function ProductDetail() {
         };
         getData();
     }, [id]);
+    console.log({ currentData });
+    const handleAddToCart = ({ cart_code, user_id, product_id }: ICartItem) => {
+        // Logic to add to cart
+        if (currentData === null) {
+            navigation.navigate('authentication');
+            return;
+        }
+        cart.addToCart({ cart_code, user_id, product_id });
+        setShowToast(true);
+    };
     return (
         <View style={{ backgroundColor: '#eeeeee', flex: 1, flexDirection: 'column' }}>
             <TouchableOpacity onPress={goToBack} style={styles.backPage}>
@@ -115,30 +137,6 @@ export default function ProductDetail() {
                                             ></Image>
                                         </View>
                                     ))}
-                                    <View style={styles.slide1}>
-                                        <Image
-                                            style={styles.image_banner}
-                                            source={{
-                                                uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
-                                            }}
-                                        ></Image>
-                                    </View>
-                                    <View style={styles.slide2}>
-                                        <Image
-                                            style={styles.image_banner}
-                                            source={{
-                                                uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
-                                            }}
-                                        ></Image>
-                                    </View>
-                                    <View style={styles.slide3}>
-                                        <Image
-                                            style={styles.image_banner}
-                                            source={{
-                                                uri: 'https://down-vn.img.susercontent.com/file/bad56edcbd19de3269ff43e8a2e28f34',
-                                            }}
-                                        ></Image>
-                                    </View>
                                 </Swiper>
                             )}
                         </View>
@@ -229,21 +227,37 @@ export default function ProductDetail() {
                                 <Text style={styles.contentHeaderText}>Mô tả sản phẩm</Text>
                             </View>
                             <View style={styles.contentBody}>
-                                <Text style={styles.contentBodyText}>{productData?.description}</Text>
+                                {productData?.description &&
+                                    JSON.parse(productData?.description)?.map((item: any, index: any) => (
+                                        <Text key={index} style={styles.contentBodyText}>
+                                            {item}
+                                        </Text>
+                                    ))}
                             </View>
                         </View>
                     </View>
                 </View>
             </ScrollView>
             <View style={styles.navFooter}>
-                <View style={styles.navFooterIcon}>
-                    <IconF name="cart-plus" size={24} color="#ffffff" />
-                    <Text style={styles.navFooterText}>Thêm vào giỏ hàng</Text>
-                </View>
+                <TouchableWithoutFeedback
+                    onPress={() =>
+                        handleAddToCart({
+                            cart_code: `CART${currentData?.id}`,
+                            user_id: currentData?.id,
+                            product_id: productData?.id,
+                        })
+                    }
+                >
+                    <View style={styles.navFooterIcon}>
+                        <IconF name="cart-plus" size={24} color="#ffffff" />
+                        <Text style={styles.navFooterText}>Thêm vào giỏ hàng</Text>
+                    </View>
+                </TouchableWithoutFeedback>
                 <View style={styles.navFooterRight}>
                     <Text style={styles.navFooterTextRight}>Mua ngay</Text>
                 </View>
             </View>
+            {showToast && <Toast message="Đã thêm vào giỏ" onHide={() => setShowToast(false)} />}
         </View>
     );
 }

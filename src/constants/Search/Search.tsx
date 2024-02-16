@@ -10,7 +10,7 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import product from '@/src/api/product';
@@ -82,15 +82,24 @@ const data = [
         number_sold: 2800,
     },
 ];
+interface IProductSearch {
+    id: number;
+    images: string;
+    price: number;
+    quantity_sold: number;
+    title: string;
+}
 export default function Search() {
     const navigation: any = useNavigation();
     const [text, setText] = useState<string>('');
+    const [mode, setMode] = useState<'new' | 'selling' | 'icre' | 'desc' | 'oldest'>('new');
     const goToBack = () => {
         navigation.goBack();
     };
-    const goToDetail = () => {
+    const [dataSearch, setDataSearch] = useState<IProductSearch[]>([]);
+    const goToDetail = (id: number) => {
         navigation.navigate('product_detail', {
-            id: 123, // Đây là id, bạn có thể thay đổi giá trị tùy ý
+            id: id, // Đây là id, bạn có thể thay đổi giá trị tùy ý
             otherParams: 'Hello from Home Screen!', // Bạn có thể truyền các params khác
         });
     };
@@ -107,11 +116,47 @@ export default function Search() {
     } = styles;
 
     const handleInputSubmit = async (text: string) => {
-        const query = `?query=${text}`;
+        const orderBy =
+            mode === 'new'
+                ? `createdAt=DESC`
+                : mode === 'selling'
+                ? 'quantity_sold=DESC'
+                : mode === 'icre'
+                ? `price=ASC`
+                : mode === 'desc'
+                ? `price=DESC`
+                : `createdAt=ASC`;
+        const query = `?query=${text}&${orderBy}`;
         try {
-            const response = await product.getSearchProduct(query);
+            const response: any = await product.getSearchProduct(query);
+            if (response?.data?.err === 0) {
+                setDataSearch(response?.data?.response?.rows);
+            }
         } catch (error) {}
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const orderBy =
+                mode === 'new'
+                    ? `createdAt=DESC`
+                    : mode === 'selling'
+                    ? 'quantity_sold=DESC'
+                    : mode === 'icre'
+                    ? `price=ASC`
+                    : mode === 'desc'
+                    ? `price=DESC`
+                    : `createdAt=ASC`;
+            const query = `?query=${text}&${orderBy}`;
+            try {
+                const response: any = await product.getSearchProduct(query);
+                if (response?.data?.err === 0) {
+                    setDataSearch(response?.data?.response?.rows);
+                }
+            } catch (error) {}
+        };
+        fetchData();
+    }, [mode]);
     return (
         // <ScrollView style={{ flex: 1, backgroundColor: 'blue' }}>
         <View style={styles.contaner}>
@@ -127,7 +172,6 @@ export default function Search() {
                                 placeholder="Tìm shop t"
                                 onChangeText={setText}
                                 onSubmitEditing={() => {
-                                    console.log(text);
                                     handleInputSubmit(text);
                                 }}
                                 value={text}
@@ -137,26 +181,61 @@ export default function Search() {
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <View style={styles.navmenu}>
-                        <View style={styles.navmenuItem}>
+                        <TouchableOpacity
+                            onPress={() => setMode('new')}
+                            style={
+                                mode === 'new'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Mới nhất</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('selling')}
+                            style={
+                                mode === 'selling'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Bán chạy</Text>
-                        </View>
-                        {/*<View style={styles.navmenuItem}>
-                             <Text style={styles.navitemText}>Túi Handmade</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
-                            <Text style={styles.navitemText}>Quần áo nữ</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
-                            <Text style={styles.navitemText}>Quần áo nam</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('desc')}
+                            style={
+                                mode === 'desc'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
+                            <Text style={styles.navitemText}>Giá⬇</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('icre')}
+                            style={
+                                mode === 'icre'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
+                            <Text style={styles.navitemText}>Giá⬆</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('oldest')}
+                            style={
+                                mode === 'oldest'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
+                            <Text style={styles.navitemText}>Cũ nhất</Text>
+                        </TouchableOpacity>
+                        {/* <View style={styles.navmenuItem}>
                             <Text style={styles.navitemText}>Giày nữ</Text>
-                        </View>
+                        </View> */}
 
-                        <View style={styles.navmenuItem}>
+                        {/* <View style={styles.navmenuItem}>
                             <Text style={styles.navitemText}>Túi xách nữ</Text>
                         </View> */}
                     </View>
@@ -165,13 +244,13 @@ export default function Search() {
             <View style={styles.body}>
                 <ScrollView>
                     <View style={productList}>
-                        {data.map((item, index) => (
+                        {dataSearch.map((item, index) => (
                             <View style={productitemContainer} key={index}>
-                                <TouchableWithoutFeedback key={index} onPress={goToDetail}>
+                                <TouchableWithoutFeedback key={index} onPress={() => goToDetail(item.id)}>
                                     <View style={productItem}>
                                         <View style={productImage}>
                                             <Image
-                                                source={{ uri: item.image }}
+                                                source={{ uri: JSON.parse(item.images)?.[0] }}
                                                 style={{
                                                     position: 'absolute',
                                                     top: 0,
@@ -192,7 +271,7 @@ export default function Search() {
                                             <Text numberOfLines={1} ellipsizeMode="tail" style={price}>
                                                 ₫{item.price}
                                             </Text>
-                                            <Text style={number_sold}>Đã bán {item.number_sold}</Text>
+                                            <Text style={number_sold}>Đã bán {item.quantity_sold}</Text>
                                         </View>
                                     </View>
                                 </TouchableWithoutFeedback>
@@ -241,7 +320,7 @@ const styles = StyleSheet.create({
         paddingBottom: 1,
         paddingTop: 1,
         borderRightWidth: 1,
-        borderColor: '#ccc',
+        borderRightColor: '#ccc',
     },
     navitemText: { fontSize: 16, color: '#555555' },
     body: {
@@ -295,4 +374,5 @@ const styles = StyleSheet.create({
     number_sold: {
         fontSize: 12,
     },
+    new: {},
 });

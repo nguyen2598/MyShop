@@ -12,12 +12,16 @@ export const getCurrent: any = createAsyncThunk('user/getCurrent', async () => {
         return null;
     }
 });
+const initialState: {
+    currentData: object | null;
+    msg: string;
+} = {
+    currentData: {},
+    msg: '',
+};
 const userSlice = createSlice({
     name: 'user',
-    initialState: {
-        currentData: null,
-        msg: '',
-    },
+    initialState: initialState,
     reducers: {
         getLogout: (state, action) => {
             state.currentData = null;

@@ -10,3 +10,4 @@ export { default as SignUp } from './SignUp/SignUp';
 export { default as ListProduct } from './ListProduct/ListProduct';
 export { default as ProductDetail } from './ProductDetail/ProductDetail';
 export { default as ConfirmRegister } from './ConfirmRegister/ConfirmRegister';
+export { default as Toast } from './Toast/Toast';

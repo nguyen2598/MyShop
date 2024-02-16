@@ -65,7 +65,7 @@ interface IProduct {
     price: number;
     quantity_sold: number;
 }
-export default function TopProduct() {
+export default function TopProduct({ isAddData, setIsAddData, setIsLoad, isLoad }: any) {
     const navigation: any = useNavigation();
     const {
         container,
@@ -93,13 +93,31 @@ export default function TopProduct() {
         const query = `?page=1&quantity_sold=DESC`;
         const getData = async () => {
             const response: any = await product.getTopProducts(query);
-            console.log({ response });
             if (response?.data?.err === 0) {
                 setProductDatas(response?.data?.response?.rows);
             }
         };
         getData();
     }, []);
+    useEffect(() => {
+        if (isAddData) {
+            setPage((prev) => prev + 1);
+            const query = `?page=${page + 1}&quantity_sold=DESC`;
+            console.log(query);
+            setIsAddData(false);
+            const getData = async () => {
+                const response: any = await product.getTopProducts(query);
+                if (response?.data?.err === 0) {
+                    setProductDatas((prev) => [...prev, ...response?.data?.response?.rows]);
+                }
+                if (response?.data?.response?.rows?.length === 0) {
+                    setIsLoad(true);
+                }
+            };
+            getData();
+        }
+    }, [isAddData]);
+    console.log('ú ú');
     return (
         <View style={container}>
             <View style={titleContainer}>
@@ -126,7 +144,7 @@ export default function TopProduct() {
                                         />
                                     </View>
                                     <View style={productTitle}>
-                                        <Text numberOfLines={2} ellipsizeMode="tail">
+                                        <Text numberOfLines={2} ellipsizeMode="tail" style={styles.titleText}>
                                             {item.title}
                                         </Text>
                                     </View>
@@ -143,8 +161,11 @@ export default function TopProduct() {
                 </View>
             </View>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                {/* <Button title="Press me" onPress={handleButtonClick} /> */}
-                {<ActivityIndicator size="large" color="#FF9900" />}
+                {isLoad ? (
+                    <Text style={{ color: '#FF9900', marginTop: 10 }}>Hết sản phẩm</Text>
+                ) : (
+                    <ActivityIndicator size="large" color="#FF9900" />
+                )}
             </View>
         </View>
     );
@@ -188,7 +209,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffff',
         borderRadius: 2,
         overflow: 'hidden',
-        shadowColor: '#000',
+        // shadowColor: 'red',
         shadowOffset: {
             width: 0,
             height: 3,
@@ -199,12 +220,14 @@ const styles = StyleSheet.create({
     productImage: {
         width: '100%',
         paddingTop: '100%',
-        backgroundColor: 'yellow',
+        backgroundColor: '#ccc',
         position: 'relative',
     },
     productTitle: {
         padding: 4,
+        height: 50,
     },
+    titleText: {},
     productFooter: {
         padding: 4,
         flexDirection: 'row',
