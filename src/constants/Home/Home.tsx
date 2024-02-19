@@ -48,8 +48,7 @@ export default function Home() {
         >
             <View style={styles.container}>
                 <Collection />
-                <Category />
-                <Category />
+
                 <Category />
                 <TopProduct isAddData={isAddData} setIsAddData={setIsAddData} setIsLoad={setIsLoad} isLoad={isLoad} />
             </View>

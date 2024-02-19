@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const axiosClient = axios.create({
-    baseURL: 'http://192.168.1.198:5000',
+    baseURL: 'http://192.168.1.24:5000',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -11,10 +11,8 @@ const axiosClient = axios.create({
 // Add a request interceptor
 axiosClient.interceptors.request.use(
     async function (config) {
-        const authJSON:any= await AsyncStorage.getItem('persist:auth')
-        const token =
-        authJSON &&
-            JSON.parse(authJSON!)?.token?.slice(1, -1);
+        const authJSON: any = await AsyncStorage.getItem('persist:auth');
+        const token = authJSON && JSON.parse(authJSON!)?.token?.slice(1, -1);
         // console.log('tokenq: ', token);
         // Do something before request is sent
         config.headers['Authorization'] = `Bearer ${token}`;

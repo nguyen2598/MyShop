@@ -10,7 +10,7 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 const data = [
@@ -83,6 +83,9 @@ const data = [
 ];
 export default function Shop() {
     const navigation: any = useNavigation();
+    const [mode, setMode] = useState<'new' | 'selling' | 'bag' | 'clothesMen' | 'clothesWon' | 'shoe' | 'handmade'>(
+        'handmade',
+    );
     const goToBack = () => {
         navigation.goBack();
     };
@@ -117,28 +120,77 @@ export default function Shop() {
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <View style={styles.navmenu}>
-                        <View style={styles.navmenuItem}>
+                        <TouchableOpacity
+                            onPress={() => setMode('new')}
+                            style={
+                                mode === 'new'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Mới nhất</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('new')}
+                            style={
+                                mode === 'new'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Bán chạy</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('handmade')}
+                            style={
+                                mode === 'new'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Túi Handmade</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('clothesWon')}
+                            style={
+                                mode === 'clothesWon'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Quần áo nữ</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('clothesMen')}
+                            style={
+                                mode === 'clothesMen'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Quần áo nam</Text>
-                        </View>
-                        <View style={styles.navmenuItem}>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMode('shoe')}
+                            style={
+                                mode === 'shoe'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Giày nữ</Text>
-                        </View>
+                        </TouchableOpacity>
 
-                        <View style={styles.navmenuItem}>
+                        <TouchableOpacity
+                            onPress={() => setMode('bag')}
+                            style={
+                                mode === 'bag'
+                                    ? { ...styles.navmenuItem, borderBottomColor: 'red', borderBottomWidth: 2 }
+                                    : styles.navmenuItem
+                            }
+                        >
                             <Text style={styles.navitemText}>Túi xách nữ</Text>
-                        </View>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </View>
