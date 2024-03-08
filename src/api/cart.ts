@@ -6,7 +6,7 @@ const cart = {
             const response = await axiosClient.get(url);
             return response;
         } catch (error) {
-            return error;
+            throw error;
         }
     },
     async addToCart(data: object) {
@@ -15,7 +15,16 @@ const cart = {
             const response = await axiosClient.post(url, data);
             return response;
         } catch (error) {
-            return error;
+            throw error;
+        }
+    },
+    async getCountCartApi(id: number) {
+        const url = `/api/cart/get-count?user_id=${id}`;
+        try {
+            const response = await axiosClient.get(url);
+            return response;
+        } catch (error) {
+            throw error;
         }
     },
 };

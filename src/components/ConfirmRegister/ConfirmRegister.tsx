@@ -21,7 +21,6 @@ export default function ConfirmRegister({ dataCode }: { dataCode: string }) {
         formState: { errors },
     } = useForm<FormValues>();
     const onSubmit = (data: FormValues) => {
-        console.log(data);
         const {
             name,
             email,

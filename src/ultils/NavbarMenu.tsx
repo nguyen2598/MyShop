@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconEntypo from 'react-native-vector-icons/Entypo';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 import ItemNavProps from '../interface/ItemNavProps ';
 const IconMenu: ItemNavProps[] = [
     {
@@ -20,8 +21,8 @@ const IconMenu: ItemNavProps[] = [
         path: 'search',
     },
     {
-        title: 'Shop',
-        icon: <IconEntypo name="shop" size={30} color="#cccccc" />,
+        title: 'Thông báo',
+        icon: <IconIonicons name="notifications" size={30} color="#cccccc" />,
         path: 'shop',
     },
 ];

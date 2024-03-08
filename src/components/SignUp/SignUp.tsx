@@ -27,7 +27,6 @@ export default function RegisterForm() {
     const onSubmit = async (data: RegisterFormProps) => {
         try {
             const response: any = await auth.firstRegister(data);
-            console.log(response);
             if (response?.data?.err === 1) {
                 setMessEmail(response?.data?.msg);
                 setIsConfirmed(true);

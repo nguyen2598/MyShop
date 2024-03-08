@@ -10,9 +10,9 @@ import { getCurrent, getLogout, logout } from './src/redux/slice';
 export default function Screen() {
     const Stack = createNativeStackNavigator();
     const dispatch = useDispatch();
-    const { isLoggedIn } = useSelector((state: any) => state.auth);
+    const { isLoggedIn, token } = useSelector((state: any) => state.auth);
     const { currentData } = useSelector((state: any) => state.user);
-
+    console.log({ currentData, isLoggedIn, token });
     useEffect(() => {
         const timeOut = setTimeout(() => {
             isLoggedIn && dispatch(getCurrent());
@@ -22,7 +22,7 @@ export default function Screen() {
         };
     }, [isLoggedIn]);
     useEffect(() => {
-        if (currentData === null) {
+        if (currentData === null || isLoggedIn === false) {
             dispatch(getLogout(''));
             dispatch(logout(''));
         }

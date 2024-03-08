@@ -21,7 +21,9 @@ import IconF from 'react-native-vector-icons/FontAwesome5';
 import product from '@/src/api/product';
 import Toast from '../Toast/Toast';
 import cart from '@/src/api/cart';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCartCount } from '@/src/redux/slice/cartSlice';
+import { LinearGradient } from 'expo-linear-gradient';
 const { width, height } = getWidthHeightScreen;
 const data = [
     {
@@ -81,8 +83,10 @@ interface ICartItem {
     product_id: number | undefined;
 }
 export default function ProductDetail() {
+    const dispatch = useDispatch();
     const { currentData } = useSelector((state: any) => state.user);
     const [showToast, setShowToast] = useState(false);
+    const [showDecriptionProduct, setShowDecriptionProduct] = useState<boolean>(false);
 
     const route = useRoute();
     const { id, otherParams }: any = route.params;
@@ -100,16 +104,20 @@ export default function ProductDetail() {
         };
         getData();
     }, [id]);
-    console.log({ currentData });
-    const handleAddToCart = ({ cart_code, user_id, product_id }: ICartItem) => {
+
+    const handleAddToCart = async ({ cart_code, user_id, product_id }: ICartItem) => {
         // Logic to add to cart
         if (currentData === null) {
             navigation.navigate('authentication');
             return;
         }
-        cart.addToCart({ cart_code, user_id, product_id });
+        const response: any = await cart.addToCart({ cart_code, user_id, product_id });
+        if (response?.data?.err === 0) {
+            dispatch(setCartCount(''));
+        }
         setShowToast(true);
     };
+    const handleSetShowDecriptionDetail = () => {};
     return (
         <View style={{ backgroundColor: '#eeeeee', flex: 1, flexDirection: 'column' }}>
             <TouchableOpacity onPress={goToBack} style={styles.backPage}>
@@ -228,12 +236,48 @@ export default function ProductDetail() {
                             </View>
                             <View style={styles.contentBody}>
                                 {productData?.description &&
-                                    JSON.parse(productData?.description)?.map((item: any, index: any) => (
-                                        <Text key={index} style={styles.contentBodyText}>
-                                            {item}
-                                        </Text>
-                                    ))}
+                                    JSON.parse(productData?.description)
+                                        ?.filter((item: any, index: any) => index < 5)
+                                        ?.map((item: any, index: any) => (
+                                            <Text key={index} style={styles.contentBodyText}>
+                                                {item}
+                                            </Text>
+                                        ))}
+                                {showDecriptionProduct
+                                    ? productData?.description &&
+                                      JSON.parse(productData?.description)
+                                          ?.filter((item: any, index: any) => index >= 5)
+                                          ?.map((item: any, index: any) => (
+                                              <Text key={index} style={styles.contentBodyText}>
+                                                  {item}
+                                              </Text>
+                                          ))
+                                    : ''}
+                                {productData?.description && JSON.parse(productData?.description)?.length > 5 ? (
+                                    <Button
+                                        title={showDecriptionProduct ? 'Thu gọn' : 'Mở rộng'}
+                                        onPress={() => setShowDecriptionProduct((prev) => !prev)}
+                                    />
+                                ) : (
+                                    ''
+                                )}
                             </View>
+                            {/* <LinearGradient
+                                colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
+                                style={styles.gradient}
+                            /> */}
+                            {/* <LinearGradient
+                                colors={['#c0392b', '#f1c40f', '#8e44ad']}
+                                start={{ x: 0, y: 0.5 }}
+                                end={{ x: 1, y: 1 }}
+                                style={styles.gradient}
+                            /> */}
+                            {/* <LinearGradient
+                                colors={['red', 'yellow']}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 1 }}
+                                style={styles.gradient}
+                            /> */}
                         </View>
                     </View>
                 </View>
@@ -440,5 +484,12 @@ const styles = StyleSheet.create({
     navFooterTextRight: {
         color: '#ffffff',
         fontSize: 20,
+    },
+    gradient: {
+        position: 'absolute',
+        top: 20, // Vị trí của gradient so với văn bản, điều chỉnh tùy ý
+        left: 0,
+        right: 0,
+        height: 4, // Chiều cao của gradient
     },
 });

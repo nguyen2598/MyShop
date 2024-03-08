@@ -1,5 +1,5 @@
 import { ListProduct, Navbar, ProductDetail } from '@/src/components';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 // type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -12,9 +12,13 @@ import Contact from '../Contact/Contact';
 import Home from '../Home/Home';
 import Search from '../Search/Search';
 import { StatusBar } from 'expo-status-bar';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCountCart, reSetCartCount } from '@/src/redux/slice/cartSlice';
 
 export default function Main({ navigation }: { navigation: any }) {
     const Stack = createNativeStackNavigator();
+    const dispatch = useDispatch();
+    const { currentData } = useSelector((state: any) => state.user);
     const gotoAuthentication = () => {
         navigation.navigate('authentication');
     };
@@ -24,7 +28,14 @@ export default function Main({ navigation }: { navigation: any }) {
     const gotoOrderHistory = () => {
         navigation.navigate('order_history');
     };
-
+    console.log({ currentDataa: currentData });
+    useEffect(() => {
+        if (currentData !== null && Object.entries(currentData).length > 0) {
+            dispatch(getCountCart(currentData.id));
+        } else {
+            dispatch(reSetCartCount(0));
+        }
+    }, [currentData]);
     return (
         <View style={styles.SafeAreaView}>
             <View style={styles.container}>

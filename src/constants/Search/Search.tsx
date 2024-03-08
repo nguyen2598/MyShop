@@ -10,78 +10,14 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
 } from 'react-native';
+import Modal from 'react-native-modal';
+
 import React, { useEffect, useState } from 'react';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import product from '@/src/api/product';
-const data = [
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-];
+import { Button, Input } from 'react-native-elements';
+
 interface IProductSearch {
     id: number;
     images: string;
@@ -90,19 +26,6 @@ interface IProductSearch {
     title: string;
 }
 export default function Search() {
-    const navigation: any = useNavigation();
-    const [text, setText] = useState<string>('');
-    const [mode, setMode] = useState<'new' | 'selling' | 'icre' | 'desc' | 'oldest'>('new');
-    const goToBack = () => {
-        navigation.goBack();
-    };
-    const [dataSearch, setDataSearch] = useState<IProductSearch[]>([]);
-    const goToDetail = (id: number) => {
-        navigation.navigate('product_detail', {
-            id: id, // Đây là id, bạn có thể thay đổi giá trị tùy ý
-            otherParams: 'Hello from Home Screen!', // Bạn có thể truyền các params khác
-        });
-    };
     const {
         body,
         productList,
@@ -115,48 +38,206 @@ export default function Search() {
         number_sold,
     } = styles;
 
-    const handleInputSubmit = async (text: string) => {
-        const orderBy =
-            mode === 'new'
-                ? `createdAt=DESC`
-                : mode === 'selling'
-                ? 'quantity_sold=DESC'
-                : mode === 'icre'
-                ? `price=ASC`
-                : mode === 'desc'
-                ? `price=DESC`
-                : `createdAt=ASC`;
-        const query = `?query=${text}&${orderBy}`;
-        try {
-            const response: any = await product.getSearchProduct(query);
-            if (response?.data?.err === 0) {
-                setDataSearch(response?.data?.response?.rows);
-            }
-        } catch (error) {}
-    };
+    const navigation: any = useNavigation();
+
+    const [text, setText] = useState<string>('');
+    const [mode, setMode] = useState<'bag' | 'clothesMen' | 'clothesWon' | 'shoe' | 'handmade' | ''>('');
+    const [modeSearch, setModeSearch] = useState<'new' | 'old' | 'icre' | 'desc' | 'selling' | 'less_interested'>(
+        'new',
+    );
+    const [filterVisible, setFilterVisible] = useState(false);
+    const [selectedButtonsPrice, setSelectedButtonsPrice] = useState<number[][]>([]);
+    const [dataSearch, setDataSearch] = useState<IProductSearch[]>([]);
+    const [searchDistance, setSearchDistance] = useState<object>({});
+    const [selectedButtonsQuantitySold, setSelectedButtonsQuantitySold] = useState<number[][]>([]);
 
     useEffect(() => {
+        // const fetchData = async () => {
+        //     const orderBy =
+        //         mode === 'new'
+        //             ? `createdAt=DESC`
+        //             : mode === 'selling'
+        //             ? 'quantity_sold=DESC'
+        //             : mode === 'icre'
+        //             ? `price=ASC`
+        //             : mode === 'desc'
+        //             ? `price=DESC`
+        //             : `createdAt=ASC`;
+        //     const query = `?query=${text}&${orderBy}`;
+        //     try {
+        //         const response: any = await product.getSearchProduct(query);
+        //         if (response?.data?.err === 0) {
+        //             setDataSearch(response?.data?.response?.rows);
+        //         }
+        //     } catch (error) {}
+        // };
+        // fetchData();
+    }, [mode]);
+
+    const goToBack = () => {
+        navigation.goBack();
+    };
+    const goToDetail = (id: number) => {
+        navigation.navigate('product_detail', {
+            id: id, // Đây là id, bạn có thể thay đổi giá trị tùy ý
+            otherParams: 'Hello from Home Screen!', // Bạn có thể truyền các params khác
+        });
+    };
+
+    const handleReset = () => {
+        setMode('');
+        setModeSearch('new');
+        setSearchDistance({});
+        setSelectedButtonsQuantitySold([]);
+        setSelectedButtonsPrice([]);
+    };
+
+    const handleInputSubmit = async (text: string) => {
         const fetchData = async () => {
+            handleReset();
+            const code =
+                mode === 'handmade'
+                    ? `THM`
+                    : mode === 'clothesMen'
+                    ? 'QAN'
+                    : mode === 'clothesWon'
+                    ? `WMC`
+                    : mode === 'bag'
+                    ? `TXN`
+                    : mode === 'shoe'
+                    ? `GNN`
+                    : ``;
             const orderBy =
-                mode === 'new'
-                    ? `createdAt=DESC`
-                    : mode === 'selling'
-                    ? 'quantity_sold=DESC'
-                    : mode === 'icre'
-                    ? `price=ASC`
-                    : mode === 'desc'
-                    ? `price=DESC`
-                    : `createdAt=ASC`;
-            const query = `?query=${text}&${orderBy}`;
+                modeSearch === 'new'
+                    ? { createdAt: 'DESC' }
+                    : modeSearch === 'old'
+                    ? { createdAt: 'ASC' }
+                    : modeSearch === 'selling'
+                    ? { quantity_sold: 'DESC' }
+                    : modeSearch === 'icre'
+                    ? { price: 'ASC' }
+                    : modeSearch === 'desc'
+                    ? { price: 'DESC' }
+                    : { quantity_sold: 'ASC' };
+            let query: { [key: string]: any } = { querySearch: text, page: 1, orderBy: { createdAt: 'DESC' } };
+            // query = { ...query, ...searchDistance };
+            // searchDistance.forEach((obj) => {
+            //     const keys = Object.keys(obj);
+            //     query[keys[0]] = obj[keys[0]];
+            // });
+            //  `?modeSearch=${modeSearch}&${Object.keys(searchDistance[0])[0]}=${JSON.stringify(
+            //     searchDistance[0][Object.keys(searchDistance[0])[0]],
+            // )}&${Object.keys(searchDistance[1])[0]}=${searchDistance[1][Object.keys(searchDistance[1])[0]]}`;
+            console.log(1, { query });
             try {
-                const response: any = await product.getSearchProduct(query);
+                const response: any = await product.getProductbyCateCodeApi(query);
                 if (response?.data?.err === 0) {
+                    console.log({ datas: response?.data?.response?.rows });
                     setDataSearch(response?.data?.response?.rows);
                 }
             } catch (error) {}
         };
         fetchData();
-    }, [mode]);
+        // const orderBy =
+        //     mode === 'new'
+        //         ? `createdAt=DESC`
+        //         : mode === 'selling'
+        //         ? 'quantity_sold=DESC'
+        //         : mode === 'icre'
+        //         ? `price=ASC`
+        //         : mode === 'desc'
+        //         ? `price=DESC`
+        //         : `createdAt=ASC`;
+        // const query = `?query=${text}&${orderBy}`;
+        // try {
+        //     const response: any = await product.getSearchProduct(query);
+        //     if (response?.data?.err === 0) {
+        //         setDataSearch(response?.data?.response?.rows);
+        //     }
+        // } catch (error) {}
+    };
+    const handleMode = (state: 'bag' | 'clothesMen' | 'clothesWon' | 'shoe' | 'handmade' | '') => {
+        setMode(state);
+    };
+    const handleModeSearch = (state: 'new' | 'old' | 'icre' | 'desc' | 'selling' | 'less_interested') => {
+        setModeSearch(state);
+    };
+
+    const handleSearchDistance = (key: string, value: number[][]) => {
+        setSearchDistance((prev) => ({ ...prev, [key]: value }));
+    };
+    const toggleFilter = () => {
+        setFilterVisible(!filterVisible);
+    };
+    // Hàm xử lý khi ấn vào một button
+    const handleButtonPress = (buttonName: number[]) => {
+        let newArr = selectedButtonsPrice.filter((item) => `${item}` !== `${buttonName}`);
+        // Kiểm tra xem button đã được chọn chưa
+        if (newArr.length === selectedButtonsPrice.length) {
+            handleSearchDistance('price', [...selectedButtonsPrice, buttonName]);
+            setSelectedButtonsPrice((prev) => [...prev, buttonName]); // Nếu đã chọn, hủy chọn nó
+        } else {
+            handleSearchDistance('price', newArr);
+            setSelectedButtonsPrice(newArr); // Nếu chưa chọn, thêm nó vào mảng selectedButtonsPrice
+        }
+    };
+    const handleButtonPressQuantitySold = (buttonName: number[]) => {
+        let newArr = selectedButtonsQuantitySold.filter((item) => `${item}` !== `${buttonName}`);
+        // Kiểm tra xem button đã được chọn chưa
+        if (newArr.length === selectedButtonsQuantitySold.length) {
+            handleSearchDistance('quantity_sold', [...selectedButtonsQuantitySold, buttonName]);
+            setSelectedButtonsQuantitySold((prev) => [...prev, buttonName]); // Nếu đã chọn, hủy chọn nó
+        } else {
+            handleSearchDistance('quantity_sold', newArr);
+            setSelectedButtonsQuantitySold(newArr); // Nếu chưa chọn, thêm nó vào mảng selectedButtonsPrice
+        }
+    };
+    const handleApply = () => {
+        const fetchData = async () => {
+            const code =
+                mode === 'handmade'
+                    ? `THM`
+                    : mode === 'clothesMen'
+                    ? 'QAN'
+                    : mode === 'clothesWon'
+                    ? `WMC`
+                    : mode === 'bag'
+                    ? `TXN`
+                    : mode === 'shoe'
+                    ? `GNN`
+                    : ``;
+            const orderBy =
+                modeSearch === 'new'
+                    ? { createdAt: 'DESC' }
+                    : modeSearch === 'old'
+                    ? { createdAt: 'ASC' }
+                    : modeSearch === 'selling'
+                    ? { quantity_sold: 'DESC' }
+                    : modeSearch === 'icre'
+                    ? { price: 'ASC' }
+                    : modeSearch === 'desc'
+                    ? { price: 'DESC' }
+                    : { quantity_sold: 'ASC' };
+            let query: { [key: string]: any } = { querySearch: text, code, page: 1, orderBy };
+            query = { ...query, ...searchDistance };
+            // searchDistance.forEach((obj) => {
+            //     const keys = Object.keys(obj);
+            //     query[keys[0]] = obj[keys[0]];
+            // });
+            //  `?modeSearch=${modeSearch}&${Object.keys(searchDistance[0])[0]}=${JSON.stringify(
+            //     searchDistance[0][Object.keys(searchDistance[0])[0]],
+            // )}&${Object.keys(searchDistance[1])[0]}=${searchDistance[1][Object.keys(searchDistance[1])[0]]}`;
+            console.log(1, { query });
+            try {
+                const response: any = await product.getProductbyCateCodeApi(query);
+                if (response?.data?.err === 0) {
+                    console.log({ datas: response?.data?.response?.rows });
+                    setDataSearch(response?.data?.response?.rows);
+                }
+            } catch (error) {}
+        };
+        fetchData();
+    };
     return (
         // <ScrollView style={{ flex: 1, backgroundColor: 'blue' }}>
         <View style={styles.contaner}>
@@ -178,8 +259,479 @@ export default function Search() {
                             />
                         </View>
                     </View>
+                    <TouchableOpacity onPress={toggleFilter}>
+                        <IconAntDesign name="filter" size={36} color="#cccccc" />
+                    </TouchableOpacity>
                 </View>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <Modal
+                    isVisible={filterVisible}
+                    animationIn="slideInRight"
+                    animationOut="slideOutRight"
+                    swipeDirection="right"
+                    onBackdropPress={toggleFilter}
+                    onSwipeComplete={toggleFilter}
+                    style={styles.modal}
+                >
+                    <View style={styles.modalContent}>
+                        <ScrollView style={{ marginBottom: 64 }}>
+                            <View style={styles.modalContentHeader}>
+                                <Text style={styles.modalText}>Bộ lọc sản phẩm</Text>
+                            </View>
+                            <View style={styles.modalContentBodyItem}>
+                                <View style={styles.modalContentBodyItemHeader}>
+                                    <Text style={styles.modalItemtext}>Lọc theo loại</Text>
+                                </View>
+                                <View style={styles.modalboxbutton}>
+                                    <Button
+                                        buttonStyle={
+                                            mode === 'bag'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            mode === 'bag'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Túi xách nữ"
+                                        onPress={() => handleMode('bag')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            mode === 'clothesMen'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            mode === 'clothesMen'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Quần áo nam"
+                                        onPress={() => handleMode('clothesMen')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            mode === 'clothesWon'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            mode === 'clothesWon'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Quần áo nữ"
+                                        onPress={() => handleMode('clothesWon')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            mode === 'shoe'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            mode === 'shoe'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Giày nữ"
+                                        onPress={() => handleMode('shoe')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            mode === 'handmade'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            mode === 'handmade'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Túi handmade"
+                                        onPress={() => handleMode('handmade')}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.modalContentBodyItem}>
+                                <View style={styles.modalContentBodyItemHeader}>
+                                    <Text style={styles.modalItemtext}>Lọc theo giá</Text>
+                                </View>
+                                <View style={styles.modalboxbutton}>
+                                    <Button
+                                        buttonStyle={
+                                            modeSearch === 'new'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            modeSearch === 'new'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Mới nhất"
+                                        onPress={() => handleModeSearch('new')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            modeSearch === 'old'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            modeSearch === 'old'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Cũ nhất"
+                                        onPress={() => handleModeSearch('old')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            modeSearch === 'icre'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            modeSearch === 'icre'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Giá ⬆"
+                                        onPress={() => handleModeSearch('icre')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            modeSearch === 'desc'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            modeSearch === 'desc'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Giá ⬇"
+                                        onPress={() => handleModeSearch('desc')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            modeSearch === 'selling'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            modeSearch === 'selling'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Bán chạy"
+                                        onPress={() => handleModeSearch('selling')}
+                                    />
+                                    <Button
+                                        buttonStyle={
+                                            modeSearch === 'less_interested'
+                                                ? { ...styles.modalbutton, backgroundColor: '#EE4D2D' }
+                                                : styles.modalbutton
+                                        }
+                                        titleStyle={
+                                            modeSearch === 'less_interested'
+                                                ? {
+                                                      ...styles.modalbuttonText,
+                                                      color: '#ffffff',
+                                                  }
+                                                : styles.modalbuttonText
+                                        }
+                                        title="Ít quan tâm"
+                                        onPress={() => handleModeSearch('less_interested')}
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={styles.modalContentBodyItem}>
+                                <View style={styles.modalContentBodyItemHeader}>
+                                    <Text style={styles.modalItemtext}>Lọc theo khoảng giá</Text>
+                                </View>
+                                <View style={styles.modalboxItem}>
+                                    <View style={styles.modalboxInput}>
+                                        {/* <Input
+                                            style={styles.modalInput}
+                                            placeholder="Tối thiểu"
+                                            // value={searchDistance?.price}
+                                        />
+                                        <Input style={styles.modalInput} placeholder="Tối đa" /> */}
+                                    </View>
+                                    <View style={styles.modalboxbutton}>
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(JSON.stringify([0, 50]))
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(JSON.stringify([0, 50]))
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="0-50k"
+                                            onPress={() => {
+                                                // handleSearchDistance('price', [0, 50]);
+                                                handleButtonPress([0, 50]);
+                                            }}
+                                        />
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(JSON.stringify([50, 100]))
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(JSON.stringify([50, 100]))
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="50k-100k"
+                                            onPress={() => {
+                                                // handleSearchDistance('price', [50, 100]);
+                                                handleButtonPress([50, 100]);
+                                            }}
+                                        />
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(
+                                                    JSON.stringify([100, 150]),
+                                                )
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(
+                                                    JSON.stringify([100, 150]),
+                                                )
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="100k-150k"
+                                            onPress={() => {
+                                                // handleSearchDistance('price', [100, 150]);
+                                                handleButtonPress([100, 150]);
+                                            }}
+                                        />
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(
+                                                    JSON.stringify([150, 200]),
+                                                )
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(
+                                                    JSON.stringify([150, 200]),
+                                                )
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="150k-200k"
+                                            onPress={() => {
+                                                // handleSearchDistance('price', [150, 200]);
+                                                handleButtonPress([150, 200]);
+                                            }}
+                                        />
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(
+                                                    JSON.stringify([200, 999999999999999]),
+                                                )
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsPrice).includes(
+                                                    JSON.stringify([200, 999999999999999]),
+                                                )
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="Trên 200k"
+                                            onPress={() => {
+                                                // handleSearchDistance('price', [200, 999999999999999]);
+
+                                                handleButtonPress([200, 999999999999999]);
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={styles.modalContentBodyItem}>
+                                <View style={styles.modalContentBodyItemHeader}>
+                                    <Text style={styles.modalItemtext}>Lọc theo khoảng bán</Text>
+                                </View>
+                                <View style={styles.modalboxItem}>
+                                    {/* <View style={styles.modalboxInput}>
+                                        <Input style={styles.modalInput} placeholder="Tối thiểu" />
+                                        <Input style={styles.modalInput} placeholder="Tối đa" />
+                                    </View> */}
+
+                                    <View style={styles.modalboxbutton}>
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([0, 100]),
+                                                )
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([0, 100]),
+                                                )
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="0-100sp"
+                                            onPress={() => {
+                                                // handleSearchDistance('QuanselectedButtonsQuantitySold', [0, 100]);
+                                                handleButtonPressQuantitySold([0, 100]);
+                                            }}
+                                        />
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([100, 500]),
+                                                )
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([100, 500]),
+                                                )
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="100-500sp"
+                                            onPress={() => {
+                                                // handleSearchDistance('QuanselectedButtonsQuantitySold', [100, 500]);
+                                                handleButtonPressQuantitySold([100, 500]);
+                                            }}
+                                        />
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([500, 1000]),
+                                                )
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([500, 1000]),
+                                                )
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="500-1000sp"
+                                            onPress={() => {
+                                                // handleSearchDistance('QuanselectedButtonsQuantitySold', [500, 1000]);
+                                                handleButtonPressQuantitySold([500, 1000]);
+                                            }}
+                                        />
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([1000, 1500]),
+                                                )
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([1000, 1500]),
+                                                )
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="1000-1500sp"
+                                            onPress={() => {
+                                                // handleSearchDistance('QuanselectedButtonsQuantitySold', [1000, 1500]);
+                                                handleButtonPressQuantitySold([1000, 1500]);
+                                            }}
+                                        />
+                                        <Button
+                                            buttonStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([1500, 999999999999999]),
+                                                )
+                                                    ? styles.modalbuttonHighLight
+                                                    : styles.modalbutton
+                                            }
+                                            titleStyle={
+                                                JSON.stringify(selectedButtonsQuantitySold).includes(
+                                                    JSON.stringify([1500, 999999999999999]),
+                                                )
+                                                    ? styles.modalbuttonTextHighLight
+                                                    : styles.modalbuttonText
+                                            }
+                                            title="Trên 1500sp"
+                                            onPress={() => {
+                                                // handleSearchDistance('QuanselectedButtonsQuantitySold', [1500, 999999999999999]);
+
+                                                handleButtonPressQuantitySold([1500, 999999999999999]);
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+                            </View>
+                        </ScrollView>
+                        <View style={styles.modalContentFooter}>
+                            <Button
+                                buttonStyle={styles.modalbuttonFooter1}
+                                titleStyle={styles.modalbuttonTextFooter1}
+                                title={'Thiết lập lại'}
+                                onPress={handleReset}
+                            />
+                            <Button
+                                buttonStyle={styles.modalbuttonFooter2}
+                                titleStyle={styles.modalbuttonTextFooter2}
+                                title="Áp dụng"
+                                onPress={handleApply}
+                            />
+                        </View>
+                    </View>
+                </Modal>
+                {/*<ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <View style={styles.navmenu}>
                         <TouchableOpacity
                             onPress={() => setMode('new')}
@@ -231,15 +783,9 @@ export default function Search() {
                         >
                             <Text style={styles.navitemText}>Cũ nhất</Text>
                         </TouchableOpacity>
-                        {/* <View style={styles.navmenuItem}>
-                            <Text style={styles.navitemText}>Giày nữ</Text>
-                        </View> */}
-
-                        {/* <View style={styles.navmenuItem}>
-                            <Text style={styles.navitemText}>Túi xách nữ</Text>
-                        </View> */}
+                      
                     </View>
-                </ScrollView>
+                </ScrollView> */}
             </View>
             <View style={styles.body}>
                 <ScrollView>
@@ -375,4 +921,93 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     new: {},
+    modal: {
+        margin: 0,
+        justifyContent: 'flex-end',
+    },
+    modalContent: {
+        backgroundColor: '#eeeeee',
+        // padding: 22,
+        // justifyContent: 'center',
+        // alignItems: 'center',
+
+        width: '76%',
+        height: '100%',
+        alignSelf: 'flex-end',
+    },
+    modalContentHeader: {
+        flexDirection: 'row',
+        // justifyContent: 'center',
+        alignItems: 'center',
+        paddingLeft: 16,
+    },
+    modalText: {
+        fontSize: 20,
+        paddingTop: 16,
+        paddingBottom: 16,
+    },
+    modalContentBodyItem: {
+        backgroundColor: '#ffffff',
+        padding: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#eeeeee',
+    },
+    modalContentBodyItemHeader: {},
+    modalItemtext: { fontSize: 16, paddingBottom: 16 },
+    modalboxbutton: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 10,
+    },
+    modalbutton: {
+        backgroundColor: '#eeeeee',
+        padding: 24,
+        paddingTop: 4,
+        paddingBottom: 4,
+    },
+    modalbuttonHighLight: {
+        backgroundColor: '#EE4D2D',
+        padding: 24,
+        paddingTop: 4,
+        paddingBottom: 4,
+    },
+    modalbuttonText: {
+        color: '#555555',
+    },
+    modalbuttonTextHighLight: {
+        color: '#ffffff',
+    },
+    modalboxItem: {},
+    modalboxInput: {},
+    modalInput: {},
+    modalContentFooter: {
+        position: 'absolute',
+        bottom: 0,
+        padding: 16,
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'flex-end',
+        gap: 24,
+    },
+    modalbuttonFooter1: {
+        padding: 16,
+        paddingTop: 8,
+        paddingBottom: 8,
+        backgroundColor: '#ffffff',
+        borderColor: '#EE4D2D',
+        borderWidth: 1,
+    },
+    modalbuttonTextFooter1: {
+        fontSize: 16,
+        color: '#EE4D2D',
+    },
+    modalbuttonFooter2: {
+        padding: 16,
+        paddingTop: 8,
+        paddingBottom: 8,
+        backgroundColor: '#EE4D2D',
+    },
+    modalbuttonTextFooter2: {
+        fontSize: 16,
+    },
 });

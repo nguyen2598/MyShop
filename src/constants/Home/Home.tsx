@@ -15,13 +15,13 @@ export default function Home() {
     //     }
     // };
     // getAllKeys();
+
     const [isLoad, setIsLoad] = useState<boolean>(false);
     const scrollViewRef: any = useRef(null);
     const [isAddData, setIsAddData] = useState<boolean>(false);
     const handleLoadMoreData = () => {
         // Gọi API hoặc thực hiện logic để lấy thêm dữ liệu
         setIsAddData(true);
-        console.log('co co');
     };
 
     const handleScroll = (event: any) => {

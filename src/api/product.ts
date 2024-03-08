@@ -30,9 +30,19 @@ const product = {
     },
     async getSearchProduct(query: string) {
         const url = `/api/product/search${query}`;
-        console.log(url);
         try {
             const response = await axiosClient.get(url);
+            return response;
+        } catch (error) {
+            return error;
+        }
+    },
+    async getProductbyCateCodeApi(query: object) {
+        const url = `/api/product/shop`;
+        try {
+            const response = await axiosClient.get(url, {
+                params: query,
+            });
             return response;
         } catch (error) {
             return error;

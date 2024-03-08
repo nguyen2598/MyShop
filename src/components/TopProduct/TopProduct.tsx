@@ -13,50 +13,6 @@ import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
 import { useNavigation } from '@react-navigation/native';
 import product from '@/src/api/product';
 const { width, height } = getWidthHeightScreen;
-const data = [
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-];
 
 interface IProduct {
     id: number;
@@ -91,6 +47,7 @@ export default function TopProduct({ isAddData, setIsAddData, setIsLoad, isLoad 
     const [page, setPage] = useState<number>(1);
     useEffect(() => {
         const query = `?page=1&quantity_sold=DESC`;
+
         const getData = async () => {
             const response: any = await product.getTopProducts(query);
             if (response?.data?.err === 0) {
@@ -103,7 +60,7 @@ export default function TopProduct({ isAddData, setIsAddData, setIsLoad, isLoad 
         if (isAddData) {
             setPage((prev) => prev + 1);
             const query = `?page=${page + 1}&quantity_sold=DESC`;
-            console.log(query);
+            console.log({ query });
             setIsAddData(false);
             const getData = async () => {
                 const response: any = await product.getTopProducts(query);
@@ -117,7 +74,6 @@ export default function TopProduct({ isAddData, setIsAddData, setIsLoad, isLoad 
             getData();
         }
     }, [isAddData]);
-    console.log('ú ú');
     return (
         <View style={container}>
             <View style={titleContainer}>

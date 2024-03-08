@@ -4,8 +4,7 @@ import { useSelector } from 'react-redux';
 
 export default function ChangeInfo({ navigation }: { navigation: any }) {
     const { currentData } = useSelector((state: any) => state.user);
-    console.log({ currentData });
-    console.log('dabng o trang chnage info');
+
     const goToBack = () => {
         navigation.goBack();
     };

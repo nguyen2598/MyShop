@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     contact: {
         flex: 1,
         padding: 10,
-        marginBottom:80
+        marginBottom: 80,
     },
     viewimage: {
         aspectRatio: 1, // Tỉ lệ không quan trọng, vì hình ảnh sẽ điều chỉnh theo kích thước của container

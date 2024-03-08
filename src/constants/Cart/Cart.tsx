@@ -14,9 +14,10 @@ import React, { useEffect, useState } from 'react';
 import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import cart from '@/src/api/cart';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import genPrice from '@/src/ultils/func/genNumberPrice';
+import { setTitleHeaderName } from '@/src/redux/slice/titleSlice';
 const { width, height } = getWidthHeightScreen;
 interface ICartItem {
     product_id: number;
@@ -31,11 +32,13 @@ interface ICartItem {
 }
 export default function Cart() {
     const navigation: any = useNavigation();
+    const dispatch = useDispatch();
     const { currentData } = useSelector((state: any) => state.user);
     const [cartData, setCartData] = useState<ICartItem[]>([]);
     const [checkedItems, setCheckedItems] = useState<any>([]);
     const [total, setTotal] = useState<number>(0);
     useEffect(() => {
+        dispatch(setTitleHeaderName('Giỏ hàng'));
         if (currentData === null) return;
         const fetchData = async () => {
             const query = `?page=1&user_id=${currentData?.id}`;
@@ -45,9 +48,11 @@ export default function Cart() {
             }
         };
         fetchData();
+        return () => {
+            dispatch(setTitleHeaderName('Trang chủ'));
+        };
     }, []);
     const handleCheck = (item: ICartItem) => {
-        console.log({ checkedItems, item });
         if (checkedItems.includes(item)) {
             // Nếu đã chọn, loại bỏ khỏi danh sách
             setCheckedItems(checkedItems.filter((checkedItem: any) => checkedItem !== item));
@@ -68,7 +73,6 @@ export default function Cart() {
             setCartData(updatedCartData);
         }
     };
-    console.log({ checkedItems });
     useEffect(() => {
         let totalPrice = 0;
         cartData.forEach((item) => {

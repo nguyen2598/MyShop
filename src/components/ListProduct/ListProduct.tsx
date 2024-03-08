@@ -46,6 +46,7 @@ const data = [
     },
 ];
 export default function ListProduct() {
+    console.log('page  product');
     const navigation: any = useNavigation();
     const goBack = () => {
         navigation.goBack();
