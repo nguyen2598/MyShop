@@ -10,6 +10,15 @@ const product = {
             return error;
         }
     },
+    async getProductRelate(categoryCode: string, id: string) {
+        const url = `/api/product/product-relate?categoryCode=${categoryCode}&id=${id}`;
+        try {
+            const response = await axiosClient.get(url);
+            return response;
+        } catch (error) {
+            return error;
+        }
+    },
     async get10Products(query: string) {
         const url = `/api/product${query}`;
         try {

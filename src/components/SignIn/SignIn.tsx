@@ -11,7 +11,7 @@ type FormValues = {
     password: string;
 };
 export default function SignIn() {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const {
         control,
         handleSubmit,

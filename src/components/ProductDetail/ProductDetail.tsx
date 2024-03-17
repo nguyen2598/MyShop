@@ -8,9 +8,9 @@ import {
     TouchableOpacity,
     Platform,
     StatusBar,
-    Button,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { Button, Input } from 'react-native-elements';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
 import Swiper from 'react-native-swiper';
@@ -25,50 +25,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setCartCount } from '@/src/redux/slice/cartSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 const { width, height } = getWidthHeightScreen;
-const data = [
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-    {
-        image: 'https://down-vn.img.susercontent.com/file/a6ceab77a1fb5f64a03d5937d546bef1',
-        title: 'Túi Handmade Tự Đan đan len tự làm - Phụ Kiện Đan Túi [Có video hướng dẫn]',
-        price: '88.000',
-        number_sold: 2800,
-    },
-];
+
+interface IRelate {
+    id: number;
+    images: string;
+    title: string;
+    price: string;
+    quantity_sold: number;
+}
 interface IProduct {
     id: number;
     title: string;
@@ -83,6 +47,7 @@ interface ICartItem {
     product_id: number | undefined;
 }
 export default function ProductDetail() {
+    const scrollViewRef: any = useRef(null);
     const dispatch = useDispatch();
     const { currentData } = useSelector((state: any) => state.user);
     const [showToast, setShowToast] = useState(false);
@@ -94,15 +59,31 @@ export default function ProductDetail() {
     const goToBack = () => {
         navigation.goBack();
     };
+    const goToDetail = (id: number) => {
+        navigation.navigate('product_detail', {
+            id: id, // Đây là id, bạn có thể thay đổi giá trị tùy ý
+            otherParams: 'Hello from Home Screen!', // Bạn có thể truyền các params khác
+        });
+    };
     const [productData, setProductData] = useState<IProduct>();
+    const [productRelateData, setProductRelateData] = useState<IRelate[]>([]);
     useEffect(() => {
         const getData = async () => {
             const response: any = await product.getProductDetail(id);
             if (response?.data?.err === 0) {
                 setProductData(response?.data?.response);
+                const responseRelate: any = await product.getProductRelate(
+                    response?.data?.response?.categoryCode,
+                    response?.data?.response?.id,
+                );
+                if (responseRelate?.data?.err === 0) {
+                    setProductRelateData(responseRelate?.data?.response);
+                }
             }
         };
         getData();
+
+        scrollToTop();
     }, [id]);
 
     const handleAddToCart = async ({ cart_code, user_id, product_id }: ICartItem) => {
@@ -118,12 +99,15 @@ export default function ProductDetail() {
         setShowToast(true);
     };
     const handleSetShowDecriptionDetail = () => {};
+    const scrollToTop = () => {
+        if (scrollViewRef.current) scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+    };
     return (
         <View style={{ backgroundColor: '#eeeeee', flex: 1, flexDirection: 'column' }}>
             <TouchableOpacity onPress={goToBack} style={styles.backPage}>
                 <IconAntDesign name="arrowleft" size={36} color="#ffffff" />
             </TouchableOpacity>
-            <ScrollView>
+            <ScrollView ref={scrollViewRef}>
                 <View style={styles.conatiner}>
                     <View style={styles.contentBox1}>
                         <View
@@ -172,19 +156,19 @@ export default function ProductDetail() {
                     </View>
                     <View style={styles.contentBox}>
                         <View style={styles.contentBoxHeader}>
-                            <Text style={styles.headerText}>Sản phẩm nổi bật</Text>
+                            <Text style={styles.headerText}>Sản phẩm liên quan</Text>
                         </View>
                         <View>
                             <View>
                                 <View style={styles.productList}>
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                        {data.map((item, index) => (
+                                        {productRelateData?.map((item, index) => (
                                             <View style={styles.productitemContainer} key={index}>
-                                                <TouchableWithoutFeedback onPress={() => console.log('hihi')}>
+                                                <TouchableWithoutFeedback onPress={() => goToDetail(item?.id)}>
                                                     <View style={styles.productItem}>
                                                         <View style={styles.productImage}>
                                                             <Image
-                                                                source={{ uri: item.image }}
+                                                                source={{ uri: JSON.parse(item.images)[0] }}
                                                                 style={{
                                                                     position: 'absolute',
                                                                     top: 0,
@@ -211,10 +195,10 @@ export default function ProductDetail() {
                                                                 ellipsizeMode="tail"
                                                                 style={styles.priceImage}
                                                             >
-                                                                ₫{item.price}
+                                                                ₫{item.price}.000
                                                             </Text>
                                                             <Text style={styles.number_soldImage}>
-                                                                Đã bán {item.number_sold}
+                                                                Đã bán {item.quantity_sold}
                                                             </Text>
                                                         </View>
                                                     </View>
@@ -253,15 +237,8 @@ export default function ProductDetail() {
                                               </Text>
                                           ))
                                     : ''}
-                                {productData?.description && JSON.parse(productData?.description)?.length > 5 ? (
-                                    <Button
-                                        title={showDecriptionProduct ? 'Thu gọn' : 'Mở rộng'}
-                                        onPress={() => setShowDecriptionProduct((prev) => !prev)}
-                                    />
-                                ) : (
-                                    ''
-                                )}
                             </View>
+
                             {/* <LinearGradient
                                 colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
                                 style={styles.gradient}
@@ -279,6 +256,37 @@ export default function ProductDetail() {
                                 style={styles.gradient}
                             /> */}
                         </View>
+                        {productData?.description && JSON.parse(productData?.description)?.length > 5 ? (
+                            <Button
+                                buttonStyle={{
+                                    backgroundColor: '#FFFFFF',
+                                    borderColor: '#cccccc',
+                                    borderTopWidth: 1,
+                                    padding: 12,
+                                }}
+                                titleStyle={{ color: '#EE4D2D' }}
+                                title={
+                                    <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 4 }}>
+                                        <Text style={{ color: '#EE4D2D', fontSize: 16, height: 23 }}>
+                                            {showDecriptionProduct ? 'Thu gọn' : 'Mở rộng'}
+                                        </Text>
+                                        {showDecriptionProduct ? (
+                                            <IconAntDesign name="up" size={20} color="#EE4D2D" />
+                                        ) : (
+                                            <IconAntDesign name="down" size={20} color="#EE4D2D" />
+                                        )}
+                                    </View>
+                                    // showDecriptionProduct ? (
+                                    //     <IconAntDesign name="up" size={36} color="#EE4D2D" />
+                                    // ) : (
+                                    //     <IconAntDesign name="up" size={36} color="#EE4D2D" />
+                                    // )
+                                }
+                                onPress={() => setShowDecriptionProduct((prev) => !prev)}
+                            />
+                        ) : (
+                            ''
+                        )}
                     </View>
                 </View>
             </ScrollView>
@@ -379,6 +387,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         marginBottom: 20,
         padding: 10,
+        paddingBottom: 0,
     },
     contentBoxHeader: {
         paddingBottom: 10,
@@ -400,7 +409,9 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: '600',
     },
-    contentBody: {},
+    contentBody: {
+        paddingBottom: 20,
+    },
     contentBodyText: {
         fontSize: 16,
         lineHeight: 24,
@@ -434,7 +445,7 @@ const styles = StyleSheet.create({
     productImage: {
         width: '100%',
         paddingTop: '100%',
-        backgroundColor: 'yellow',
+        backgroundColor: '#cccccc',
         position: 'relative',
     },
     productTitle: {
