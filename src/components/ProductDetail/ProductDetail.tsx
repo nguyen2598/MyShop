@@ -24,13 +24,17 @@ import cart from '@/src/api/cart';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCartCount } from '@/src/redux/slice/cartSlice';
 import { LinearGradient } from 'expo-linear-gradient';
+import genPrice from '@/src/ultils/func/genNumberPrice';
+import StarRating from '../Star/Star';
+import ReviewItem from '../ReviewItem/ReviewItem';
+import Review from '../Review/Review';
 const { width, height } = getWidthHeightScreen;
 
 interface IRelate {
     id: number;
     images: string;
     title: string;
-    price: string;
+    price: number;
     quantity_sold: number;
 }
 interface IProduct {
@@ -135,7 +139,7 @@ export default function ProductDetail() {
                         <View style={styles.wrapperPr}>
                             <View style={styles.priceWrapper}>
                                 <Text style={styles.priced}>₫</Text>
-                                <Text style={styles.price}>{productData?.price}.000</Text>
+                                <Text style={styles.price}>{genPrice(productData?.price! * 1000)}</Text>
                             </View>
                             <View style={styles.priceWrapper}>
                                 <Text style={styles.title}>{productData?.title}</Text>
@@ -195,7 +199,7 @@ export default function ProductDetail() {
                                                                 ellipsizeMode="tail"
                                                                 style={styles.priceImage}
                                                             >
-                                                                ₫{item.price}.000
+                                                                ₫{genPrice(item.price * 1000)}
                                                             </Text>
                                                             <Text style={styles.number_soldImage}>
                                                                 Đã bán {item.quantity_sold}
@@ -287,6 +291,56 @@ export default function ProductDetail() {
                         ) : (
                             ''
                         )}
+                    </View>
+                    <View style={styles.contentBox}>
+                        {/* <View style={styles.contentBoxHeader}>
+                            <Text style={styles.headerText}>Đánh giá sản phẩm</Text>
+                            <View>
+                                <StarRating rating={4.6} size={16} />
+                                <Text>4.6/5</Text>
+                                <Text>(366 đánh giá)</Text>
+                            </View>
+                        </View>
+                        <View style={styles.content}>
+                            <View style={styles.contentHeader}>
+                                <Text style={styles.contentHeaderText}>Mô tả sản phẩm</Text>
+                            </View>
+                            <View style={styles.contentBody}>
+                                <ReviewItem />
+                            </View>
+                        </View>
+                        {productData?.description && JSON.parse(productData?.description)?.length > 5 ? (
+                            <Button
+                                buttonStyle={{
+                                    backgroundColor: '#FFFFFF',
+                                    borderColor: '#cccccc',
+                                    borderTopWidth: 1,
+                                    padding: 12,
+                                }}
+                                titleStyle={{ color: '#EE4D2D' }}
+                                title={
+                                    <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 4 }}>
+                                        <Text style={{ color: '#EE4D2D', fontSize: 16, height: 23 }}>
+                                            {showDecriptionProduct ? 'Thu gọn' : 'Mở rộng'}
+                                        </Text>
+                                        {showDecriptionProduct ? (
+                                            <IconAntDesign name="up" size={20} color="#EE4D2D" />
+                                        ) : (
+                                            <IconAntDesign name="down" size={20} color="#EE4D2D" />
+                                        )}
+                                    </View>
+                                    // showDecriptionProduct ? (
+                                    //     <IconAntDesign name="up" size={36} color="#EE4D2D" />
+                                    // ) : (
+                                    //     <IconAntDesign name="up" size={36} color="#EE4D2D" />
+                                    // )
+                                }
+                                onPress={() => setShowDecriptionProduct((prev) => !prev)}
+                            />
+                        ) : (
+                            ''
+                        )} */}
+                        <Review />
                     </View>
                 </View>
             </ScrollView>

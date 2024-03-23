@@ -17,6 +17,7 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import product from '@/src/api/product';
 import { Button, Input } from 'react-native-elements';
+import genPrice from '@/src/ultils/func/genNumberPrice';
 
 interface IProductSearch {
     id: number;
@@ -815,7 +816,7 @@ export default function Search() {
                                         </View>
                                         <View style={productFooter}>
                                             <Text numberOfLines={1} ellipsizeMode="tail" style={price}>
-                                                ₫{item.price}
+                                                ₫{genPrice(item.price * 1000)}
                                             </Text>
                                             <Text style={number_sold}>Đã bán {item.quantity_sold}</Text>
                                         </View>

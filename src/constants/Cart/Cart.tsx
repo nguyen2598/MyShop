@@ -115,7 +115,7 @@ export default function Cart() {
                                     </Text>
                                 </View>
                                 <View style={styles.price}>
-                                    <Text style={styles.priceText}>₫{item?.product?.price}.000</Text>
+                                    <Text style={styles.priceText}>₫{genPrice(item?.product?.price * 1000)}</Text>
                                 </View>
                                 <View style={styles.footerBody}>
                                     <View style={styles.footerLeft}>
@@ -147,7 +147,7 @@ export default function Cart() {
                 <View style={styles.footerBuy}>
                     <View style={styles.purchase_price}>
                         <Text style={styles.purchase_price1}>Tổng thanh toán</Text>
-                        <Text style={styles.purchase_price2}>₫{total > 0 ? `${genPrice(total)}.000` : '0'}</Text>
+                        <Text style={styles.purchase_price2}>₫{total > 0 ? `${genPrice(total * 1000)}` : '0'}</Text>
                     </View>
                     <View style={styles.buy}>
                         <Text style={styles.buyText}>Mua hàng</Text>

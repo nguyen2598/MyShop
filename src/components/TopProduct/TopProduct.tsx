@@ -12,6 +12,7 @@ import React, { useEffect, useState } from 'react';
 import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
 import { useNavigation } from '@react-navigation/native';
 import product from '@/src/api/product';
+import genPrice from '@/src/ultils/func/genNumberPrice';
 const { width, height } = getWidthHeightScreen;
 
 interface IProduct {
@@ -106,7 +107,7 @@ export default function TopProduct({ isAddData, setIsAddData, setIsLoad, isLoad 
                                     </View>
                                     <View style={productFooter}>
                                         <Text numberOfLines={1} ellipsizeMode="tail" style={price}>
-                                            ₫{item.price}.000
+                                            ₫{genPrice(item.price * 1000)}
                                         </Text>
                                         <Text style={number_sold}>Đã bán {item.quantity_sold}</Text>
                                     </View>

@@ -19,6 +19,7 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import Picker from 'react-native-picker-select';
 import DropDownPicker from 'react-native-dropdown-picker';
 import pickerStateInit from '@/src/ultils/pickerItem';
+import PayPage from '../PayPage/PayPage';
 type FormValues = {
     title: string;
     description: string;
@@ -149,349 +150,350 @@ export default function Shop() {
 
     const [items, setItem] = useState<PickerItem[]>(pickerStateInit);
 
-    return (
-        <View style={{ padding: 20, paddingTop: 100 }}>
-            <View>
-                <View style={styles.inputGroud}>
-                    <Controller
-                        control={control}
-                        render={({ field }) => (
-                            <View style={styles.inputForm}>
-                                <Text
-                                    onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
-                                    style={{
-                                        paddingLeft: 4,
-                                        paddingRight: 4,
-                                        marginRight: 10,
-                                        position: 'absolute',
-                                        top: '0%',
-                                        left: 16,
-                                        transform: [{ translateY: -textHeight / 2 }],
-                                        backgroundColor: '#eeeeee',
-                                        fontSize: 16,
-                                        zIndex: 1000,
-                                    }}
-                                >
-                                    Tên sản phẩm
-                                </Text>
-                                <TextInput
-                                    // placeholder="Tên sản phẩm"
-                                    style={{
-                                        flex: 1,
-                                        borderWidth: 0,
-                                        padding: 16,
-                                        paddingTop: 8,
-                                        paddingBottom: 8,
-                                        fontSize: 16,
-                                    }}
-                                    onChangeText={field.onChange}
-                                    value={field.value}
-                                />
-                            </View>
-                        )}
-                        name="title"
-                        rules={{
-                            required: 'Vui lòng nhập tên sản phẩm',
-                            minLength: {
-                                value: 6,
-                                message: 'Tên phải có ít nhất 6 ký tự',
-                            },
-                        }}
-                    />
-                    <View style={{}}>
-                        <Text style={styles.spanErr}>{errors.title ? errors.title.message : ''}</Text>
-                    </View>
-                </View>
+    // return (
+    //     <View style={{ padding: 20, paddingTop: 100 }}>
+    //         <View>
+    //             <View style={styles.inputGroud}>
+    //                 <Controller
+    //                     control={control}
+    //                     render={({ field }) => (
+    //                         <View style={styles.inputForm}>
+    //                             <Text
+    //                                 onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
+    //                                 style={{
+    //                                     paddingLeft: 4,
+    //                                     paddingRight: 4,
+    //                                     marginRight: 10,
+    //                                     position: 'absolute',
+    //                                     top: '0%',
+    //                                     left: 16,
+    //                                     transform: [{ translateY: -textHeight / 2 }],
+    //                                     backgroundColor: '#eeeeee',
+    //                                     fontSize: 16,
+    //                                     zIndex: 1000,
+    //                                 }}
+    //                             >
+    //                                 Tên sản phẩm
+    //                             </Text>
+    //                             <TextInput
+    //                                 // placeholder="Tên sản phẩm"
+    //                                 style={{
+    //                                     flex: 1,
+    //                                     borderWidth: 0,
+    //                                     padding: 16,
+    //                                     paddingTop: 8,
+    //                                     paddingBottom: 8,
+    //                                     fontSize: 16,
+    //                                 }}
+    //                                 onChangeText={field.onChange}
+    //                                 value={field.value}
+    //                             />
+    //                         </View>
+    //                     )}
+    //                     name="title"
+    //                     rules={{
+    //                         required: 'Vui lòng nhập tên sản phẩm',
+    //                         minLength: {
+    //                             value: 6,
+    //                             message: 'Tên phải có ít nhất 6 ký tự',
+    //                         },
+    //                     }}
+    //                 />
+    //                 <View style={{}}>
+    //                     <Text style={styles.spanErr}>{errors.title ? errors.title.message : ''}</Text>
+    //                 </View>
+    //             </View>
 
-                <View style={styles.inputGroud}>
-                    <Controller
-                        control={control}
-                        render={({ field }) => (
-                            <View style={styles.inputForm}>
-                                <Text
-                                    onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
-                                    style={{
-                                        paddingLeft: 4,
-                                        paddingRight: 4,
-                                        marginRight: 10,
-                                        position: 'absolute',
-                                        top: '0%',
-                                        left: 16,
-                                        transform: [{ translateY: -textHeight / 2 }],
-                                        backgroundColor: '#eeeeee',
-                                        fontSize: 16,
-                                        zIndex: 1000,
-                                    }}
-                                >
-                                    Mô tả
-                                </Text>
-                                <TextInput
-                                    style={{
-                                        flex: 1,
-                                        borderWidth: 0,
-                                        padding: 16,
-                                        paddingTop: 8,
-                                        paddingBottom: 8,
-                                        fontSize: 16,
-                                    }}
-                                    multiline={true} // cho phep xuống dòng
-                                    numberOfLines={4} // mã là 4 dòng quá tự scroll
-                                    onChangeText={field.onChange}
-                                    value={field.value}
-                                />
-                            </View>
-                        )}
-                        name="description"
-                        rules={{
-                            required: 'Vui lòng nhập mô tả sản phẩm',
-                            minLength: {
-                                value: 6,
-                                message: 'Mô tả phải có ít nhất 6 ký tự',
-                            },
-                        }}
-                    />
-                    <View style={{}}>
-                        <Text style={styles.spanErr}>{errors.description ? errors.description.message : ''}</Text>
-                    </View>
-                </View>
-                <View>
-                    <View style={styles.inputForm}>
-                        <Text
-                            onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
-                            style={{
-                                paddingLeft: 4,
-                                paddingRight: 4,
-                                marginRight: 10,
-                                position: 'absolute',
-                                top: '0%',
-                                left: 16,
-                                transform: [{ translateY: -textHeight / 2 }],
-                                backgroundColor: '#eeeeee',
-                                fontSize: 16,
-                                zIndex: 1000,
-                            }}
-                        >
-                            Ảnh sản phẩm
-                        </Text>
-                        <View style={{ padding: 8, paddingTop: 16, paddingBottom: 16 }}>
-                            <ScrollView horizontal>
-                                <TouchableOpacity
-                                    onPress={selectImages}
-                                    style={{
-                                        borderStyle: 'dotted',
-                                        borderWidth: 1,
-                                        borderColor: '#000000',
+    //             <View style={styles.inputGroud}>
+    //                 <Controller
+    //                     control={control}
+    //                     render={({ field }) => (
+    //                         <View style={styles.inputForm}>
+    //                             <Text
+    //                                 onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
+    //                                 style={{
+    //                                     paddingLeft: 4,
+    //                                     paddingRight: 4,
+    //                                     marginRight: 10,
+    //                                     position: 'absolute',
+    //                                     top: '0%',
+    //                                     left: 16,
+    //                                     transform: [{ translateY: -textHeight / 2 }],
+    //                                     backgroundColor: '#eeeeee',
+    //                                     fontSize: 16,
+    //                                     zIndex: 1000,
+    //                                 }}
+    //                             >
+    //                                 Mô tả
+    //                             </Text>
+    //                             <TextInput
+    //                                 style={{
+    //                                     flex: 1,
+    //                                     borderWidth: 0,
+    //                                     padding: 16,
+    //                                     paddingTop: 8,
+    //                                     paddingBottom: 8,
+    //                                     fontSize: 16,
+    //                                 }}
+    //                                 multiline={true} // cho phep xuống dòng
+    //                                 numberOfLines={4} // mã là 4 dòng quá tự scroll
+    //                                 onChangeText={field.onChange}
+    //                                 value={field.value}
+    //                             />
+    //                         </View>
+    //                     )}
+    //                     name="description"
+    //                     rules={{
+    //                         required: 'Vui lòng nhập mô tả sản phẩm',
+    //                         minLength: {
+    //                             value: 6,
+    //                             message: 'Mô tả phải có ít nhất 6 ký tự',
+    //                         },
+    //                     }}
+    //                 />
+    //                 <View style={{}}>
+    //                     <Text style={styles.spanErr}>{errors.description ? errors.description.message : ''}</Text>
+    //                 </View>
+    //             </View>
+    //             <View>
+    //                 <View style={styles.inputForm}>
+    //                     <Text
+    //                         onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
+    //                         style={{
+    //                             paddingLeft: 4,
+    //                             paddingRight: 4,
+    //                             marginRight: 10,
+    //                             position: 'absolute',
+    //                             top: '0%',
+    //                             left: 16,
+    //                             transform: [{ translateY: -textHeight / 2 }],
+    //                             backgroundColor: '#eeeeee',
+    //                             fontSize: 16,
+    //                             zIndex: 1000,
+    //                         }}
+    //                     >
+    //                         Ảnh sản phẩm
+    //                     </Text>
+    //                     <View style={{ padding: 8, paddingTop: 16, paddingBottom: 16 }}>
+    //                         <ScrollView horizontal>
+    //                             <TouchableOpacity
+    //                                 onPress={selectImages}
+    //                                 style={{
+    //                                     borderStyle: 'dotted',
+    //                                     borderWidth: 1,
+    //                                     borderColor: '#000000',
 
-                                        width: 60,
-                                        height: 60,
-                                        backgroundColor: '#cccc',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <IconAntDesign name="clouduploado" size={36} color="#ffffff" />
-                                </TouchableOpacity>
-                                {imageUris?.map((uri, index) => (
-                                    <Image
-                                        key={index}
-                                        source={{
-                                            uri: uri,
-                                        }}
-                                        style={{
-                                            width: 60,
-                                            height: 60,
-                                            marginLeft: 8,
-                                            marginRight: 8,
-                                            borderWidth: 1,
-                                            borderColor: '#000000',
-                                        }}
-                                    />
-                                ))}
-                            </ScrollView>
-                        </View>
-                        {isLoadingImage ? (
-                            <View
-                                style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    borderRadius: 8,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    // transform: [{ translateY: -textHeight / 2 }],
-                                    backgroundColor: '#eeeeee',
-                                    zIndex: 90,
-                                }}
-                            >
-                                <ActivityIndicator size="large" color="#aaaaaa" />
-                            </View>
-                        ) : (
-                            ''
-                        )}
-                    </View>
-                    <View style={{}}>
-                        <Text style={styles.spanErr}> </Text>
-                    </View>
-                </View>
-                <View style={styles.inputGroud}>
-                    <Controller
-                        control={control}
-                        render={({ field }) => (
-                            <View style={styles.inputForm}>
-                                <Text
-                                    onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
-                                    style={{
-                                        paddingLeft: 4,
-                                        paddingRight: 4,
-                                        marginRight: 10,
-                                        position: 'absolute',
-                                        top: '0%',
-                                        left: 16,
-                                        transform: [{ translateY: -textHeight / 2 }],
-                                        backgroundColor: '#eeeeee',
-                                        fontSize: 16,
-                                        zIndex: 1000,
-                                    }}
-                                >
-                                    Giá tiền
-                                </Text>
-                                <TextInput
-                                    // placeholder="Tên sản phẩm"
-                                    style={{
-                                        flex: 1,
-                                        borderWidth: 0,
-                                        padding: 16,
-                                        paddingTop: 8,
-                                        paddingBottom: 8,
-                                        fontSize: 16,
-                                    }}
-                                    keyboardType="numeric"
-                                    onChangeText={field.onChange}
-                                    value={field.value}
-                                />
-                            </View>
-                        )}
-                        name="price"
-                        rules={{
-                            required: 'Vui lòng nhập giá tiền',
-                            // minLength: {
-                            //     value: 6,
-                            //     message: 'Tên phải có ít nhất 6 ký tự',
-                            // },
-                        }}
-                    />
-                    <View style={{}}>
-                        <Text style={styles.spanErr}>{errors.price ? errors.price.message : ''}</Text>
-                    </View>
-                </View>
-                <View style={styles.inputGroud}>
-                    <Controller
-                        control={control}
-                        render={({ field }) => (
-                            <View style={styles.inputForm}>
-                                <Text
-                                    onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
-                                    style={{
-                                        paddingLeft: 4,
-                                        paddingRight: 4,
-                                        marginRight: 10,
-                                        position: 'absolute',
-                                        top: '0%',
-                                        left: 16,
-                                        transform: [{ translateY: -textHeight / 2 }],
-                                        backgroundColor: '#eeeeee',
-                                        fontSize: 16,
-                                        zIndex: 1000,
-                                    }}
-                                >
-                                    Số lượng
-                                </Text>
-                                <TextInput
-                                    // placeholder="Tên sản phẩm"
-                                    style={{
-                                        flex: 1,
-                                        borderWidth: 0,
-                                        padding: 16,
-                                        paddingTop: 8,
-                                        paddingBottom: 8,
-                                        fontSize: 16,
-                                    }}
-                                    value={field.value}
-                                    keyboardType="numeric"
-                                    onChangeText={(text) => {
-                                        field.onChange(text);
-                                        // Kiểm tra giá trị nhập vào
-                                        if (parseInt(text) <= 0) {
-                                            control.setError('quantity', {
-                                                type: 'manual',
-                                                message: 'Số lượng phải lớn hơn 0',
-                                            });
-                                        } else {
-                                            control.setError('quantity', {
-                                                type: 'manual',
-                                                message: '',
-                                            });
-                                        }
-                                    }}
-                                />
-                            </View>
-                        )}
-                        name="quantity"
-                        rules={{
-                            required: 'Vui lòng nhập số lượng sản phẩm',
-                        }}
-                    />
-                    <View style={{}}>
-                        <Text style={styles.spanErr}>{errors.quantity ? errors.quantity.message : ''}</Text>
-                    </View>
-                </View>
-                {/* <View style={{ borderColor: '#ccc', borderWidth: 1 }}>
-                    <Picker
-                        onValueChange={(value) => console.log(value)}
-                        items={[
-                            {
-                                label: 'foot',
-                                value: 'football',
-                            },
-                            { label: 'Baseball', value: 'baseball' },
-                            { label: 'Hockey', value: 'hockey' },
-                        ]}
-                        value={'football'}
-                        placeholder={{}}
-                    />
-                </View> */}
-                {/* <View> */}
-                <DropDownPicker
-                    open={open}
-                    setOpen={setOpen}
-                    items={items}
-                    value={selectedValue}
-                    setValue={setSelectedValue}
-                    setItems={setItem}
-                    containerStyle={{ height: 40 }}
-                    style={{ backgroundColor: '#fafafa' }}
-                />
-                {/* </View> */}
-                <TouchableOpacity onPress={handleSubmit(onSubmit)} style={{ marginTop: 20 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                        <Text style={styles.btn}>Thêm sản phẩm</Text>
-                    </View>
-                </TouchableOpacity>
-                {/* <View>
-                    <Button title="Thêm sản phẩm" />
-                </View> */}
-            </View>
-            {/* <ScrollView>
-                {imageUris.map((uri, index) => (
-                    <Image key={index} source={{ uri: uri }} style={{ width: 200, height: 200, marginBottom: 10 }} />
-                ))}
-            </ScrollView> */}
-        </View>
-    );
+    //                                     width: 60,
+    //                                     height: 60,
+    //                                     backgroundColor: '#cccc',
+    //                                     flexDirection: 'row',
+    //                                     alignItems: 'center',
+    //                                     justifyContent: 'center',
+    //                                 }}
+    //                             >
+    //                                 <IconAntDesign name="clouduploado" size={36} color="#ffffff" />
+    //                             </TouchableOpacity>
+    //                             {imageUris?.map((uri, index) => (
+    //                                 <Image
+    //                                     key={index}
+    //                                     source={{
+    //                                         uri: uri,
+    //                                     }}
+    //                                     style={{
+    //                                         width: 60,
+    //                                         height: 60,
+    //                                         marginLeft: 8,
+    //                                         marginRight: 8,
+    //                                         borderWidth: 1,
+    //                                         borderColor: '#000000',
+    //                                     }}
+    //                                 />
+    //                             ))}
+    //                         </ScrollView>
+    //                     </View>
+    //                     {isLoadingImage ? (
+    //                         <View
+    //                             style={{
+    //                                 position: 'absolute',
+    //                                 top: 0,
+    //                                 left: 0,
+    //                                 right: 0,
+    //                                 bottom: 0,
+    //                                 borderRadius: 8,
+    //                                 flexDirection: 'row',
+    //                                 alignItems: 'center',
+    //                                 justifyContent: 'center',
+    //                                 // transform: [{ translateY: -textHeight / 2 }],
+    //                                 backgroundColor: '#eeeeee',
+    //                                 zIndex: 90,
+    //                             }}
+    //                         >
+    //                             <ActivityIndicator size="large" color="#aaaaaa" />
+    //                         </View>
+    //                     ) : (
+    //                         ''
+    //                     )}
+    //                 </View>
+    //                 <View style={{}}>
+    //                     <Text style={styles.spanErr}> </Text>
+    //                 </View>
+    //             </View>
+    //             <View style={styles.inputGroud}>
+    //                 <Controller
+    //                     control={control}
+    //                     render={({ field }) => (
+    //                         <View style={styles.inputForm}>
+    //                             <Text
+    //                                 onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
+    //                                 style={{
+    //                                     paddingLeft: 4,
+    //                                     paddingRight: 4,
+    //                                     marginRight: 10,
+    //                                     position: 'absolute',
+    //                                     top: '0%',
+    //                                     left: 16,
+    //                                     transform: [{ translateY: -textHeight / 2 }],
+    //                                     backgroundColor: '#eeeeee',
+    //                                     fontSize: 16,
+    //                                     zIndex: 1000,
+    //                                 }}
+    //                             >
+    //                                 Giá tiền
+    //                             </Text>
+    //                             <TextInput
+    //                                 // placeholder="Tên sản phẩm"
+    //                                 style={{
+    //                                     flex: 1,
+    //                                     borderWidth: 0,
+    //                                     padding: 16,
+    //                                     paddingTop: 8,
+    //                                     paddingBottom: 8,
+    //                                     fontSize: 16,
+    //                                 }}
+    //                                 keyboardType="numeric"
+    //                                 onChangeText={field.onChange}
+    //                                 value={field.value}
+    //                             />
+    //                         </View>
+    //                     )}
+    //                     name="price"
+    //                     rules={{
+    //                         required: 'Vui lòng nhập giá tiền',
+    //                         // minLength: {
+    //                         //     value: 6,
+    //                         //     message: 'Tên phải có ít nhất 6 ký tự',
+    //                         // },
+    //                     }}
+    //                 />
+    //                 <View style={{}}>
+    //                     <Text style={styles.spanErr}>{errors.price ? errors.price.message : ''}</Text>
+    //                 </View>
+    //             </View>
+    //             <View style={styles.inputGroud}>
+    //                 <Controller
+    //                     control={control}
+    //                     render={({ field }) => (
+    //                         <View style={styles.inputForm}>
+    //                             <Text
+    //                                 onLayout={handleTextLayout} //hàm này sẽ được gọi mỗi khi kích thước hoặc vị trí của thành phần thay đổi trên màn hình.
+    //                                 style={{
+    //                                     paddingLeft: 4,
+    //                                     paddingRight: 4,
+    //                                     marginRight: 10,
+    //                                     position: 'absolute',
+    //                                     top: '0%',
+    //                                     left: 16,
+    //                                     transform: [{ translateY: -textHeight / 2 }],
+    //                                     backgroundColor: '#eeeeee',
+    //                                     fontSize: 16,
+    //                                     zIndex: 1000,
+    //                                 }}
+    //                             >
+    //                                 Số lượng
+    //                             </Text>
+    //                             <TextInput
+    //                                 // placeholder="Tên sản phẩm"
+    //                                 style={{
+    //                                     flex: 1,
+    //                                     borderWidth: 0,
+    //                                     padding: 16,
+    //                                     paddingTop: 8,
+    //                                     paddingBottom: 8,
+    //                                     fontSize: 16,
+    //                                 }}
+    //                                 value={field.value}
+    //                                 keyboardType="numeric"
+    //                                 onChangeText={(text) => {
+    //                                     field.onChange(text);
+    //                                     // Kiểm tra giá trị nhập vào
+    //                                     if (parseInt(text) <= 0) {
+    //                                         control.setError('quantity', {
+    //                                             type: 'manual',
+    //                                             message: 'Số lượng phải lớn hơn 0',
+    //                                         });
+    //                                     } else {
+    //                                         control.setError('quantity', {
+    //                                             type: 'manual',
+    //                                             message: '',
+    //                                         });
+    //                                     }
+    //                                 }}
+    //                             />
+    //                         </View>
+    //                     )}
+    //                     name="quantity"
+    //                     rules={{
+    //                         required: 'Vui lòng nhập số lượng sản phẩm',
+    //                     }}
+    //                 />
+    //                 <View style={{}}>
+    //                     <Text style={styles.spanErr}>{errors.quantity ? errors.quantity.message : ''}</Text>
+    //                 </View>
+    //             </View>
+    //             {/* <View style={{ borderColor: '#ccc', borderWidth: 1 }}>
+    //                 <Picker
+    //                     onValueChange={(value) => console.log(value)}
+    //                     items={[
+    //                         {
+    //                             label: 'foot',
+    //                             value: 'football',
+    //                         },
+    //                         { label: 'Baseball', value: 'baseball' },
+    //                         { label: 'Hockey', value: 'hockey' },
+    //                     ]}
+    //                     value={'football'}
+    //                     placeholder={{}}
+    //                 />
+    //             </View> */}
+    //             {/* <View> */}
+    //             <DropDownPicker
+    //                 open={open}
+    //                 setOpen={setOpen}
+    //                 items={items}
+    //                 value={selectedValue}
+    //                 setValue={setSelectedValue}
+    //                 setItems={setItem}
+    //                 containerStyle={{ height: 40 }}
+    //                 style={{ backgroundColor: '#fafafa' }}
+    //             />
+    //             {/* </View> */}
+    //             <TouchableOpacity onPress={handleSubmit(onSubmit)} style={{ marginTop: 20 }}>
+    //                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+    //                     <Text style={styles.btn}>Thêm sản phẩm</Text>
+    //                 </View>
+    //             </TouchableOpacity>
+    //             {/* <View>
+    //                 <Button title="Thêm sản phẩm" />
+    //             </View> */}
+    //         </View>
+    //         {/* <ScrollView>
+    //             {imageUris.map((uri, index) => (
+    //                 <Image key={index} source={{ uri: uri }} style={{ width: 200, height: 200, marginBottom: 10 }} />
+    //             ))}
+    //         </ScrollView> */}
+    //     </View>
+    // );
+    return <PayPage />;
 }
 const styles = StyleSheet.create({
     inputGroud: {

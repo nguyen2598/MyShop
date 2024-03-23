@@ -47,7 +47,7 @@ const product = {
         }
     },
     async getProductbyCateCodeApi(query: object) {
-        const url = `/api/product/shop`;
+        const url = `/api/product/search`;
         try {
             const response = await axiosClient.get(url, {
                 params: query,
@@ -82,6 +82,22 @@ const product = {
             return response;
         } catch (error) {
             return error;
+        }
+    },
+    async createProduct(data: {
+        title: string;
+        description: string;
+        price: string;
+        quantity: string;
+        categoryCode: string;
+        images: string[];
+    }) {
+        const url = `/api/product/create-product`;
+        try {
+            const response = await axiosClient.post(url, data);
+            return response;
+        } catch (error) {
+            throw error;
         }
     },
 };
