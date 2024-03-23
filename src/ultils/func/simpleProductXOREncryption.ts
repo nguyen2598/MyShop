@@ -19,9 +19,5 @@ function simpleProductXOREncryption(inputString: string, key: number) {
         encryptedString += encryptedChar;
     }
 
-    encryptedString = encryptedString.replace(/%2\d+%/g, function (match: string): string {
-        return `${match.charCodeAt(0)}`;
-    });
-
     return encryptedString;
 }
