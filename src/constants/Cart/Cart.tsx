@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import genPrice from '@/src/ultils/func/genNumberPrice';
 import { setTitleHeaderName } from '@/src/redux/slice/titleSlice';
+import dataToString from '@/src/ultils/func/Productencryption';
+import { Toast } from '@/src/components';
 const { width, height } = getWidthHeightScreen;
 interface ICartItem {
     product_id: number;
@@ -37,6 +39,7 @@ export default function Cart() {
     const [cartData, setCartData] = useState<ICartItem[]>([]);
     const [checkedItems, setCheckedItems] = useState<any>([]);
     const [total, setTotal] = useState<number>(0);
+    console.log({ checkedItems });
     useEffect(() => {
         dispatch(setTitleHeaderName('Giỏ hàng'));
         if (currentData === null) return;
@@ -82,10 +85,29 @@ export default function Cart() {
         });
         setTotal(totalPrice);
     }, [cartData, checkedItems]);
+    const handleBuy = () => {
+        if (checkedItems.length < 1) {
+            setShowToast(true);
+        } else {
+            navigation.navigate('checkout', {
+                oder_params: dataToString(
+                    checkedItems?.map((item: ICartItem, index: number) => ({
+                        title: item?.product.title,
+                        quantity: item.quantity,
+                        price: item.product.price,
+                        srcImage: JSON.parse(item?.product?.images)?.find((image: string) => image),
+                    })),
+                    25,
+                ),
+            });
+        }
+    };
+    const [showToast, setShowToast] = useState(false);
+
     return (
         // <View>
         <View style={{ backgroundColor: '#ddd', flex: 1 }}>
-            <View style={{ paddingBottom: 55 }}>
+            <View style={{ paddingBottom: 72, flex: 1 }}>
                 <ScrollView style={styles.wrapper}>
                     {cartData.map((item, index) => (
                         <View style={styles.item} key={index}>
@@ -102,7 +124,7 @@ export default function Cart() {
                                     <Image
                                         style={{ width: '100%', height: '100%' }}
                                         source={{
-                                            uri: JSON.parse(item?.product?.images)[0],
+                                            uri: JSON.parse(item?.product?.images)?.find((image: string) => image),
                                             // uri: 'https://down-vn.img.susercontent.com/file/vn-11134201-7qukw-leqlpid8zicz6b',
                                         }}
                                     ></Image>
@@ -144,17 +166,26 @@ export default function Cart() {
                         </View>
                     ))}
                 </ScrollView>
-                <View style={styles.footerBuy}>
-                    <View style={styles.purchase_price}>
-                        <Text style={styles.purchase_price1}>Tổng thanh toán</Text>
-                        <Text style={styles.purchase_price2}>₫{total > 0 ? `${genPrice(total * 1000)}` : '0'}</Text>
-                    </View>
+            </View>
+            <View style={styles.footerBuy}>
+                <View style={styles.purchase_price}>
+                    <Text style={styles.purchase_price1}>Tổng thanh toán</Text>
+                    <Text style={styles.purchase_price2}>₫{total > 0 ? `${genPrice(total * 1000)}` : '0'}</Text>
+                </View>
+                <TouchableOpacity onPress={handleBuy}>
                     <View style={styles.buy}>
                         <Text style={styles.buyText}>Mua hàng</Text>
                         <Text style={styles.buyText}>({checkedItems.length})</Text>
                     </View>
-                </View>
+                </TouchableOpacity>
             </View>
+            {showToast && (
+                <Toast
+                    message="Bạn chưa chọn sản phẩm nào để mua"
+                    onHide={() => setShowToast(false)}
+                    icon={'exclamationcircle'}
+                />
+            )}
         </View>
         // </View>
     );
@@ -246,6 +277,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 50,
         marginBottom: 20,
+        width: width,
         flexDirection: 'row',
         justifyContent: 'space-between',
         backgroundColor: '#ffffff',

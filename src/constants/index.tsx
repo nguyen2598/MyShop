@@ -6,3 +6,4 @@ export { default as Cart } from './Cart/Cart';
 export { default as Contact } from './Contact/Contact';
 export { default as Search } from './Search/Search';
 export { default as Shop } from './Shop/Shop';
+export { default as PayPage } from './PayPage/PayPage';

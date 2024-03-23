@@ -28,6 +28,7 @@ import genPrice from '@/src/ultils/func/genNumberPrice';
 import StarRating from '../Star/Star';
 import ReviewItem from '../ReviewItem/ReviewItem';
 import Review from '../Review/Review';
+import dataToString from '@/src/ultils/func/Productencryption';
 const { width, height } = getWidthHeightScreen;
 
 interface IRelate {
@@ -101,6 +102,23 @@ export default function ProductDetail() {
             dispatch(setCartCount(''));
         }
         setShowToast(true);
+    };
+    const handleBuy = () => {
+        navigation.navigate('checkout', {
+            oder_params: dataToString(
+                [
+                    {
+                        title: productData?.title,
+                        quantity: 1,
+                        price: productData?.price,
+                        srcImage: productData?.images
+                            ? JSON.parse(productData?.images)?.find((image: string) => image)
+                            : '',
+                    },
+                ],
+                25,
+            ),
+        });
     };
     const handleSetShowDecriptionDetail = () => {};
     const scrollToTop = () => {
@@ -359,11 +377,13 @@ export default function ProductDetail() {
                         <Text style={styles.navFooterText}>Thêm vào giỏ hàng</Text>
                     </View>
                 </TouchableWithoutFeedback>
-                <View style={styles.navFooterRight}>
-                    <Text style={styles.navFooterTextRight}>Mua ngay</Text>
-                </View>
+                <TouchableOpacity onPress={handleBuy} style={styles.navFooterRight}>
+                    <View>
+                        <Text style={styles.navFooterTextRight}>Mua ngay</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
-            {showToast && <Toast message="Đã thêm vào giỏ" onHide={() => setShowToast(false)} />}
+            {showToast && <Toast message="Đã thêm vào giỏ" onHide={() => setShowToast(false)} icon={'checkcircleo'} />}
         </View>
     );
 }

@@ -1,4 +1,4 @@
-export default function encryptedStringToObject(encryptedString: string, key: number) {
+export default function stringToObject(encryptedString: string, key: number) {
     // Chuyển các ký tự số thành ký tự hoặc số tương ứng
     let decryptedString = encryptedString.replace(/%2(\d+)%2/g, function (match: string, p1) {
         return String.fromCharCode(parseInt(p1));

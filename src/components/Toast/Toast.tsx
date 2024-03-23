@@ -5,11 +5,17 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 interface ToastProps {
     message: string;
     onHide: () => void;
+    icon: string;
 }
 
-const Toast = ({ message, onHide }: ToastProps) => {
+const Toast = ({ message, onHide, icon }: ToastProps) => {
     const [fadeAnim] = useState(new Animated.Value(0));
+    const [textWidth, setTextWidth] = useState<number>(0);
 
+    const handleTextLayout = (event: any) => {
+        const { width } = event.nativeEvent.layout;
+        setTextWidth(width);
+    };
     useEffect(() => {
         Animated.timing(fadeAnim, {
             toValue: 1,
@@ -27,8 +33,11 @@ const Toast = ({ message, onHide }: ToastProps) => {
     }, [fadeAnim, onHide]);
 
     return (
-        <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-            <IconAntDesign name="checkcircleo" size={30} color="#cccccc" />
+        <Animated.View
+            style={[styles.container, [{ transform: [{ translateX: -textWidth / 2 }] }], { opacity: fadeAnim }]}
+            onLayout={handleTextLayout}
+        >
+            <IconAntDesign name={icon} size={30} color="#cccccc" />
             <Text style={styles.message}>{message}</Text>
         </Animated.View>
     );
@@ -46,7 +55,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 10,
-        left: '25%', // Căn giữa theo trục X
+        left: '50%', // Căn giữa theo trục X
         top: '50%', // Căn giữa theo trục Y
     },
     message: {
