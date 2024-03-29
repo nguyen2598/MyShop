@@ -1,7 +1,16 @@
 import { View, Text } from 'react-native';
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { Authentication, ChangeInfo, Main, OderHistory, PayPage, Search, Shop } from './src/constants';
+import {
+    Authentication,
+    ChangeInfo,
+    Main,
+    OderHistory,
+    PayPage,
+    Search,
+    Notification,
+    ReviewPage,
+} from './src/constants';
 import HomeStack from './src/constants/HomeStack/HomeStack';
 import { ProductDetail } from './src/components';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -45,8 +54,8 @@ export default function Screen() {
                     component={ProductDetail}
                     options={{ headerShown: false, title: 'New Authentication Screen' }}
                 />
-                <Stack.Screen name="search" component={Search} options={{ headerShown: false }} />
-                <Stack.Screen name="shop" component={Shop} options={{ headerShown: false }} />
+                <Stack.Screen name="search" component={ReviewPage} options={{ headerShown: false }} />
+                <Stack.Screen name="notification" component={Notification} options={{ headerShown: false }} />
                 <Stack.Screen name="checkout" component={PayPage} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>

@@ -7,53 +7,65 @@ export default function OderHistory({ navigation }: { navigation: any }) {
         navigation.goBack();
     };
     return (
-        // <ScrollView>
-        //     <View style={styles.container}>
-        //         <View style={styles.body}>
-        //             <View style={styles.oder_item}>
-        //                 <View style={styles.wrapper}>
-        //                     <Text style={styles.wrapperLeft}>Mã sản phẩm:</Text>
-        //                     <Text style={{...styles.wrapperRight,...styles.greenColor}}>ORD</Text>
-        //                 </View>
-        //                 <View style={styles.wrapper}>
-        //                     <Text style={styles.wrapperLeft}>Ảnh:</Text>
-        //                     <Image style={{...styles.wrapperRight,width:50,height:50,borderWidth:1,borderColor:'blue'}}
-        //                    source={{
-        //                             uri: 'https://down-vn.img.susercontent.com/file/c7d3de107f3cfd4e79cffb5b91ad3ede',
-        //                         }}
-        //                     ></Image>
-        //                 </View>
-        //                 <View style={styles.wrapper}>
-        //                     <Text style={styles.wrapperLeft}>Tên:</Text>
-        //                     <Text style={{...styles.wrapperRight,fontWeight:'bold',color:'#555'}}
-        //                     numberOfLines={1} ellipsizeMode="tail"
-        //                     >
-        //                         Túi len tự đan phối màu, túi handmade tự đan siêu hot tiktok set đầy đủ phụ kiện (có
-        //                         video hướng dẫn)
-        //                     </Text>
-        //                 </View>
-        //                 <View style={styles.wrapper}>
-        //                     <Text style={styles.wrapperLeft}>Thời gian đặt:</Text>
-        //                     <Text style={{...styles.wrapperRight,...styles.pinkColor}}>2024-3-2 25:08:14</Text>
-        //                 </View>
-        //                 <View style={styles.wrapper}>
-        //                     <Text style={styles.wrapperLeft}>Trạng thái:</Text>
-        //                     <Text style={{...styles.wrapperRight,...styles.greenColor}}>Pending</Text>
-        //                 </View>
-        //                 <View style={styles.wrapper}>
-        //                     <Text style={styles.wrapperLeft}>Giá:</Text>
-        //                     <Text style={{...styles.wrapperRight,...styles.pinkColor,fontWeight:'900',fontSize:20}}>148$</Text>
-        //                 </View>
-        //             </View>
-
-        //         </View>
-        //     </View>
-        // </ScrollView>
-        <View>
-            <Pie />
-            <Line />
-            {/* <ContributionGraphChart /> */}
-        </View>
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={styles.body}>
+                    <View style={styles.oder_item}>
+                        <View style={styles.wrapper}>
+                            <Text style={styles.wrapperLeft}>Mã sản phẩm:</Text>
+                            <Text style={{ ...styles.wrapperRight, ...styles.greenColor }}>ORD</Text>
+                        </View>
+                        <View style={styles.wrapper}>
+                            <Text style={styles.wrapperLeft}>Ảnh:</Text>
+                            <Image
+                                style={{
+                                    ...styles.wrapperRight,
+                                    width: 50,
+                                    height: 50,
+                                    borderWidth: 1,
+                                    borderColor: 'blue',
+                                }}
+                                source={{
+                                    uri: 'https://down-vn.img.susercontent.com/file/c7d3de107f3cfd4e79cffb5b91ad3ede',
+                                }}
+                            ></Image>
+                        </View>
+                        <View style={styles.wrapper}>
+                            <Text style={styles.wrapperLeft}>Tên:</Text>
+                            <Text
+                                style={{ ...styles.wrapperRightImage, fontWeight: 'bold', color: '#555' }}
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                            >
+                                Túi len tự đan phối màu, túi handmade tự đan siêu hot tiktok set đầy đủ phụ kiện (có
+                                video hướng dẫn)
+                            </Text>
+                        </View>
+                        <View style={styles.wrapper}>
+                            <Text style={styles.wrapperLeft}>Thời gian đặt:</Text>
+                            <Text style={{ ...styles.wrapperRight, ...styles.pinkColor }}>2024-3-2 25:08:14</Text>
+                        </View>
+                        <View style={styles.wrapper}>
+                            <Text style={styles.wrapperLeft}>Trạng thái:</Text>
+                            <Text style={{ ...styles.wrapperRight, ...styles.greenColor }}>Pending</Text>
+                        </View>
+                        <View style={styles.wrapper}>
+                            <Text style={styles.wrapperLeft}>Giá:</Text>
+                            <Text
+                                style={{ ...styles.wrapperRight, ...styles.pinkColor, fontWeight: '900', fontSize: 20 }}
+                            >
+                                148$
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        </ScrollView>
+        // <View>
+        //     <Pie />
+        //     <Line />
+        //     {/* <ContributionGraphChart /> */}
+        // </View>
     );
 }
 
@@ -86,6 +98,11 @@ const styles = StyleSheet.create({
     wrapperRight: {
         maxWidth: 200,
         fontSize: 16,
+        paddingBottom: 4,
+        paddingTop: 4,
+    },
+    wrapperRightImage: {
+        maxWidth: 200,
         paddingBottom: 4,
         paddingTop: 4,
     },

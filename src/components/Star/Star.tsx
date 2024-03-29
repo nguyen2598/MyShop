@@ -10,19 +10,19 @@ const StarRating = ({ rating, size }: { rating: number; size: number }) => {
         if (i <= fullStars) {
             stars.push(
                 <Text key={i} style={{ color: 'gold' }}>
-                    <FontAwesome name="star" size={size} color="Yellow" />
+                    <FontAwesome name="star" size={size} color="#FFCC00" />
                 </Text>,
             );
         } else if (i === fullStars + 1 && hasHalfStar) {
             stars.push(
                 <Text key={i} style={{ color: 'gold' }}>
-                    <FontAwesome name="star-half-empty" size={size} color="Yellow" />
+                    <FontAwesome name="star-half-empty" size={size} color="#FFCC00" />
                 </Text>,
             );
         } else {
             stars.push(
                 <Text key={i} style={{ color: 'gold' }}>
-                    <FontAwesome name="star-o" size={size} color="Yellow" />
+                    <FontAwesome name="star-o" size={size} color="#FFCC00" />
                 </Text>,
             );
         }

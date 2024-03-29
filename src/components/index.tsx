@@ -11,3 +11,4 @@ export { default as ListProduct } from './ListProduct/ListProduct';
 export { default as ProductDetail } from './ProductDetail/ProductDetail';
 export { default as ConfirmRegister } from './ConfirmRegister/ConfirmRegister';
 export { default as Toast } from './Toast/Toast';
+export { default as Star } from './Star/Star';

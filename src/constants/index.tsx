@@ -5,5 +5,6 @@ export { default as OderHistory } from './OderHistory/OderHistory';
 export { default as Cart } from './Cart/Cart';
 export { default as Contact } from './Contact/Contact';
 export { default as Search } from './Search/Search';
-export { default as Shop } from './Shop/Shop';
+export { default as Notification } from './Notification/Notification';
 export { default as PayPage } from './PayPage/PayPage';
+export { default as ReviewPage } from './ReviewPage/ReviewPage';

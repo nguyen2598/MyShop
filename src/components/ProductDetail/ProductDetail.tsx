@@ -104,6 +104,11 @@ export default function ProductDetail() {
         setShowToast(true);
     };
     const handleBuy = () => {
+        // Logic to add to cart
+        if (currentData === null) {
+            navigation.navigate('authentication');
+            return;
+        }
         navigation.navigate('checkout', {
             oder_params: dataToString(
                 [

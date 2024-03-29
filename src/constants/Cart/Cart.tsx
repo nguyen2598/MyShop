@@ -92,6 +92,7 @@ export default function Cart() {
             navigation.navigate('checkout', {
                 oder_params: dataToString(
                     checkedItems?.map((item: ICartItem, index: number) => ({
+                        id: item?.product.id,
                         title: item?.product.title,
                         quantity: item.quantity,
                         price: item.product.price,

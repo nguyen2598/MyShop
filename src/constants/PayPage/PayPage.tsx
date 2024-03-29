@@ -18,6 +18,8 @@ import IconEvilIcons from 'react-native-vector-icons/EvilIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import stringToObject from '@/src/ultils/func/simpleProductXOREncryption';
 import genPrice from '@/src/ultils/func/genNumberPrice';
+import order from '@/src/api/order';
+import { Toast } from '@/src/components';
 type ItemProps = { id: number; title: string; srcImage: string; price: number; quantity: number };
 const { width, height } = Dimensions.get('window');
 const DATA = [
@@ -54,14 +56,19 @@ const Item = ({ title, srcImage, price, quantity }: ItemProps) => (
 export default function PayPage() {
     const navigation: any = useNavigation();
     const route = useRoute();
+    const [message, setMessage] = useState('');
     const { oder_params }: any = route.params;
-    const [oderData, setOrderData] = useState<ItemProps[]>();
+    const [oderData, setOrderData] = useState<ItemProps[]>([]);
     const [priceProduct, setPriceProduct] = useState<number>(0);
+    const [showToast, setShowToast] = useState<boolean>(false);
+    const [showToastFalse, setshowToastFalse] = useState<boolean>(false);
+
     const goToBack = () => {
         navigation.goBack();
     };
     useEffect(() => {
         let data = stringToObject(oder_params, 25);
+        console.log({ data });
         setOrderData(data);
         let totalPrice = 0;
         data.forEach((item: ItemProps) => {
@@ -69,18 +76,34 @@ export default function PayPage() {
         });
         setPriceProduct(totalPrice);
     }, [oder_params]);
-    const handleBuy = () => {
-        navigation.navigate('checkout', {
-            // oder_params: dataToString(
-            //     checkedItems?.map((item: ICartItem, index: number) => ({
-            //         title: item?.product.title,
-            //         quantity: item.quantity,
-            //         price: item.product.price,
-            //         srcImage: JSON.parse(item?.product?.images)?.find((image: string) => image),
-            //     })),
-            //     25,
-            // ),
-        });
+    const handleBuy = async () => {
+        console.log({ oderData });
+        try {
+            // { id: number; title: string; srcImage: string; price: number; quantity: number };
+            const response = await order.purchase({
+                data: oderData.map((item) => {
+                    console.log({ item });
+                    return {
+                        product_id: item.id,
+                        total_amount: item.price * item.quantity - 20,
+
+                        shipping_address:
+                            '  ngách 59 ngõ 147 đường 234 phường thanh xuân trung quận thanh xuân thành phố hà nội',
+                        phone_number: '0963465730',
+                    };
+                }),
+                order_date: new Date(),
+            });
+            console.log('no bug');
+            console.log({ response });
+            setShowToast(true);
+            setTimeout(() => {
+                navigation.navigate('home', {});
+            }, 1000);
+        } catch (error) {
+            console.log(error);
+            setshowToastFalse(true);
+        }
     };
     return (
         <View style={styles.container}>
@@ -215,6 +238,16 @@ export default function PayPage() {
                     </View>
                 </TouchableOpacity>
             </View>
+            {showToast && (
+                <Toast message="Mua hàng thành công" onHide={() => setShowToast(false)} icon={'checkcircleo'} />
+            )}
+            {showToastFalse && (
+                <Toast
+                    message="Có lỗi xảy ra vui lòng thử lại"
+                    onHide={() => setshowToastFalse(false)}
+                    icon={'exclamationcircle'}
+                />
+            )}
         </View>
     );
 }
