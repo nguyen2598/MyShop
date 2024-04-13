@@ -1,34 +1,31 @@
-import {
-    View,
-    Text,
-    Image,
-    StyleSheet,
-    ScrollView,
-    TouchableWithoutFeedback,
-    TouchableOpacity,
-    Platform,
-    StatusBar,
-} from 'react-native';
-import { Button, Input } from 'react-native-elements';
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+    Alert,
+    Image,
+    Platform,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+} from 'react-native';
+import { Button } from 'react-native-elements';
 import Swiper from 'react-native-swiper';
-import Category from '../Category/Category';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconF from 'react-native-vector-icons/FontAwesome5';
 
-import product from '@/src/api/product';
-import Toast from '../Toast/Toast';
 import cart from '@/src/api/cart';
-import { useDispatch, useSelector } from 'react-redux';
+import product from '@/src/api/product';
 import { setCartCount } from '@/src/redux/slice/cartSlice';
-import { LinearGradient } from 'expo-linear-gradient';
-import genPrice from '@/src/ultils/func/genNumberPrice';
-import StarRating from '../Star/Star';
-import ReviewItem from '../ReviewItem/ReviewItem';
-import Review from '../Review/Review';
 import dataToString from '@/src/ultils/func/Productencryption';
+import genPrice from '@/src/ultils/func/genNumberPrice';
+import { useDispatch, useSelector } from 'react-redux';
+import Review from '../Review/Review';
+import Toast from '../Toast/Toast';
 const { width, height } = getWidthHeightScreen;
 
 interface IRelate {
@@ -45,6 +42,9 @@ interface IProduct {
     images: string;
     price: number;
     quantity_sold: number;
+    quantity: number;
+    categoryCode: string;
+    sale: number;
 }
 interface ICartItem {
     cart_code: string | null;
@@ -59,7 +59,7 @@ export default function ProductDetail() {
     const [showDecriptionProduct, setShowDecriptionProduct] = useState<boolean>(false);
 
     const route = useRoute();
-    const { id, otherParams }: any = route.params;
+    const { id, otherParams, isChange }: any = route.params;
     const navigation: any = useNavigation();
     const goToBack = () => {
         navigation.goBack();
@@ -90,7 +90,7 @@ export default function ProductDetail() {
 
         scrollToTop();
     }, [id]);
-
+    console.log({ productData });
     const handleAddToCart = async ({ cart_code, user_id, product_id }: ICartItem) => {
         // Logic to add to cart
         if (currentData === null) {
@@ -109,13 +109,28 @@ export default function ProductDetail() {
             navigation.navigate('authentication');
             return;
         }
+        // navigation.navigate('checkout', {
+        //     oder_params: dataToString(
+        //         checkedItems?.map((item: ICartItem, index: number) => ({
+        //             id: item?.product.id,
+        //             title: item?.product.title,
+        //             quantity: item.quantity,
+        //             price: item.product.price,
+        //             sale: item?.product.sale,
+        //             srcImage: JSON.parse(item?.product?.images)?.find((image: string) => image),
+        //         })),
+        //         25,
+        //     ),
+        // });
         navigation.navigate('checkout', {
             oder_params: dataToString(
                 [
                     {
+                        id: productData?.id,
                         title: productData?.title,
                         quantity: 1,
                         price: productData?.price,
+                        sale: productData?.sale,
                         srcImage: productData?.images
                             ? JSON.parse(productData?.images)?.find((image: string) => image)
                             : '',
@@ -128,6 +143,30 @@ export default function ProductDetail() {
     const handleSetShowDecriptionDetail = () => {};
     const scrollToTop = () => {
         if (scrollViewRef.current) scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+    };
+    const handleEdit = (data: IProduct | undefined) => {
+        if (data) {
+            navigation.navigate('product-manage', {
+                data: data,
+            });
+        }
+    };
+    const handleDelete = (id: number) => {
+        Alert.alert(
+            'Xác nhận xóa sản phẩm',
+            'Bạn có chắc muốn xóa sản phẩm này?',
+            [
+                {
+                    text: 'Hủy',
+                    onPress: () => {
+                        product.deleteProduct(id);
+                    },
+                    style: 'cancel',
+                },
+                { text: 'Xác nhận', onPress: () => console.log('OK Pressed') },
+            ],
+            { cancelable: false },
+        );
     };
     return (
         <View style={{ backgroundColor: '#eeeeee', flex: 1, flexDirection: 'column' }}>
@@ -169,6 +208,7 @@ export default function ProductDetail() {
                             </View>
                             <View style={styles.number_sold}>
                                 <Text>Đã bán {productData?.quantity_sold}</Text>
+                                <Text>Còn lại {productData?.quantity}</Text>
                             </View>
                         </View>
                     </View>
@@ -367,27 +407,51 @@ export default function ProductDetail() {
                     </View>
                 </View>
             </ScrollView>
-            <View style={styles.navFooter}>
-                <TouchableWithoutFeedback
-                    onPress={() =>
-                        handleAddToCart({
-                            cart_code: `CART${currentData?.id}`,
-                            user_id: currentData?.id,
-                            product_id: productData?.id,
-                        })
-                    }
-                >
-                    <View style={styles.navFooterIcon}>
-                        <IconF name="cart-plus" size={24} color="#ffffff" />
-                        <Text style={styles.navFooterText}>Thêm vào giỏ hàng</Text>
-                    </View>
-                </TouchableWithoutFeedback>
-                <TouchableOpacity onPress={handleBuy} style={styles.navFooterRight}>
-                    <View>
-                        <Text style={styles.navFooterTextRight}>Mua ngay</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
+            {!isChange ? (
+                <View style={styles.navFooter}>
+                    <TouchableWithoutFeedback
+                        onPress={() =>
+                            handleAddToCart({
+                                cart_code: `CART${currentData?.id}`,
+                                user_id: currentData?.id,
+                                product_id: productData?.id,
+                            })
+                        }
+                    >
+                        <View style={styles.navFooterIcon}>
+                            <IconF name="cart-plus" size={24} color="#ffffff" />
+                            <Text style={styles.navFooterText}>Thêm vào giỏ hàng</Text>
+                        </View>
+                    </TouchableWithoutFeedback>
+                    <TouchableOpacity onPress={handleBuy} style={styles.navFooterRight}>
+                        <View>
+                            <Text style={styles.navFooterTextRight}>Mua ngay</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            ) : (
+                <View style={styles.navFooter}>
+                    <TouchableWithoutFeedback onPress={() => handleEdit(productData)}>
+                        <View style={styles.navFooterIconEdit}>
+                            <IconF name="edit" size={24} color="#ffffff" />
+                            <Text style={styles.navFooterTextEdit}>Sửa</Text>
+                        </View>
+                    </TouchableWithoutFeedback>
+                    <TouchableOpacity
+                        onPress={() => {
+                            if (productData) handleDelete(productData.id);
+                            else {
+                                Alert.alert('Không tìm thấy sản phẩm xóa');
+                            }
+                        }}
+                        style={styles.navFooterRight}
+                    >
+                        <View>
+                            <Text style={styles.navFooterTextRight}>Xóa</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            )}
             {showToast && <Toast message="Đã thêm vào giỏ" onHide={() => setShowToast(false)} icon={'checkcircleo'} />}
         </View>
     );
@@ -457,7 +521,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#666666',
     },
-    number_sold: {},
+    number_sold: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
     contentBox1: {
         backgroundColor: '#FFFFFF',
         marginBottom: 20,
@@ -561,9 +629,24 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
     },
+    navFooterIconEdit: {
+        backgroundColor: '#28b08a',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 8,
+        padding: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        minWidth: 160,
+    },
     navFooterText: {
         color: '#ffffff',
         fontSize: 12,
+    },
+    navFooterTextEdit: {
+        color: '#ffffff',
+        fontSize: 16,
     },
     navFooterRight: {
         backgroundColor: '#fc5b31',

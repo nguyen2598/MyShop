@@ -8,3 +8,7 @@ export { default as Search } from './Search/Search';
 export { default as Notification } from './Notification/Notification';
 export { default as PayPage } from './PayPage/PayPage';
 export { default as ReviewPage } from './ReviewPage/ReviewPage';
+export { default as Statistical } from './Statistical/Statistical';
+export { default as Manage } from './Manage/Manage';
+export { default as ProductManagement } from './ProductManagement/ProductManagement';
+export { default as ApproveOrders } from './ApproveOrders/ApproveOrders';

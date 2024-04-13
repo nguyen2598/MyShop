@@ -25,24 +25,27 @@ const auth = {
             const response = await axiosClient.post(url, data);
             return response;
         } catch (error) {
-            return error;
+            throw error;
         }
     },
-    // get(id) {
-    //     const url = `/categories/${id}`;
-    //     return axiosClient.get(url);
-    // },
-    // add(data) {
-    //     const url = `/categories/`;
-    //     return axiosClient.post(url, data);
-    // },
-    // update(data) {
-    //     const url = `/categories/${data.id}`;
-    //     return axiosClient.patch(url, data);
-    // },
-    // remove(id) {
-    //     const url = `/categories/${id}`;
-    //     return axiosClient.delete(url);
-    // },
+    async sendmailResetPassword(data: { email: string }) {
+        const url = '/api/auth/send-reset-email';
+        try {
+            const response = await axiosClient.post(url, data);
+            return response;
+        } catch (error) {
+            console.log({ error });
+            throw error;
+        }
+    },
+    async completeResetPassword(data: { email: string; password: string }) {
+        const url = '/api/auth/complete-reset-email';
+        try {
+            const response = await axiosClient.post(url, data);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
 };
 export default auth;

@@ -30,6 +30,7 @@ interface ICartItem {
         title: string;
         images: string;
         price: number;
+        sale: number;
     };
 }
 export default function Cart() {
@@ -85,6 +86,7 @@ export default function Cart() {
         });
         setTotal(totalPrice);
     }, [cartData, checkedItems]);
+    console.log({ checkedItems });
     const handleBuy = () => {
         if (checkedItems.length < 1) {
             setShowToast(true);
@@ -92,10 +94,11 @@ export default function Cart() {
             navigation.navigate('checkout', {
                 oder_params: dataToString(
                     checkedItems?.map((item: ICartItem, index: number) => ({
-                        id: item?.product.id,
+                        id: item?.product.id, // chỉ trueyenf id mấy cái dưới ko đc truyền vì dễ bị người dùng sửa
                         title: item?.product.title,
                         quantity: item.quantity,
                         price: item.product.price,
+                        sale: item?.product.sale,
                         srcImage: JSON.parse(item?.product?.images)?.find((image: string) => image),
                     })),
                     25,
@@ -164,6 +167,9 @@ export default function Cart() {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+                            <View style={styles.close}>
+                                <IconAntDesign name="close" size={24} color="#FF0000" />
+                            </View>
                         </View>
                     ))}
                 </ScrollView>
@@ -225,6 +231,11 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
         flex: 3,
+    },
+    close: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
     },
     bodyHeding: {
         paddingBottom: 10,

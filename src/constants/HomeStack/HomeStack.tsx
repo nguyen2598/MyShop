@@ -5,6 +5,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
+import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import Main from '../Main/Main';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +13,7 @@ import { getLogout, logout } from '@/src/redux/slice';
 const CustomDrawerContent = (props: any) => {
     const { isLoggedIn } = useSelector((state: any) => state.auth);
     const { currentData } = useSelector((state: any) => state.user);
+    console.log({ currentData });
     const dispatch = useDispatch();
     return (
         <DrawerContentScrollView {...props}>
@@ -19,7 +21,9 @@ const CustomDrawerContent = (props: any) => {
             <View style={{ justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
                 <Image
                     source={{
-                        uri: currentData?.avatar,
+                        uri:
+                            currentData?.avatar ||
+                            'https://thespiritofsaigon.net/wp-content/uploads/2022/10/avatar-vo-danh-36.jpg',
                     }}
                     style={{ width: 120, height: 120, borderRadius: 60 }}
                 />
@@ -55,6 +59,28 @@ const CustomDrawerContent = (props: any) => {
                         <Text>Lịch sử đặt hàng</Text>
                     </TouchableOpacity>
                 </View>
+            )}
+            {currentData?.role === 0 ? (
+                <View style={styles.boxContent}>
+                    <TouchableOpacity onPress={() => props.navigation.navigate('manage')} style={styles.boxItem}>
+                        <IconMaterialIcons name="manage-accounts" size={30} color="#cccccc" />
+
+                        <Text>Quản lý</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => props.navigation.navigate('approve-orders')}
+                        style={styles.boxItem}
+                    >
+                        <IconAntDesign name="shoppingcart" size={30} color="#cccccc" />
+                        <Text>Duyệt đơn</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => props.navigation.navigate('statistical')} style={styles.boxItem}>
+                        <IconMaterialIcons name="query-stats" size={30} color="#cccccc" />
+                        <Text>Thống kê</Text>
+                    </TouchableOpacity>
+                </View>
+            ) : (
+                ''
             )}
             <View style={styles.boxContent}>
                 <TouchableOpacity style={styles.boxItem} onPress={() => props.navigation.navigate('home')}>

@@ -20,7 +20,8 @@ import stringToObject from '@/src/ultils/func/simpleProductXOREncryption';
 import genPrice from '@/src/ultils/func/genNumberPrice';
 import order from '@/src/api/order';
 import { Toast } from '@/src/components';
-type ItemProps = { id: number; title: string; srcImage: string; price: number; quantity: number };
+import { useSelector } from 'react-redux';
+type ItemProps = { id: number; title: string; srcImage: string; price: number; quantity: number; sale: number };
 const { width, height } = Dimensions.get('window');
 const DATA = [
     {
@@ -37,7 +38,7 @@ const DATA = [
     },
 ];
 
-const Item = ({ title, srcImage, price, quantity }: ItemProps) => (
+const Item = ({ title, srcImage, price, quantity, sale }: ItemProps) => (
     <View style={styles.itemwrapper}>
         <View>
             <Image style={styles.itemimage} source={{ uri: srcImage }} />
@@ -47,7 +48,18 @@ const Item = ({ title, srcImage, price, quantity }: ItemProps) => (
                 {title}
             </Text>
             <View style={styles.itemwrapperprice}>
-                <Text style={styles.itemprice}>₫{genPrice(price * 1000)}</Text>
+                {sale > 0 ? (
+                    <View>
+                        <Text style={[styles.itemprice, { textDecorationLine: 'line-through' }]}>
+                            ₫{genPrice(price * 1000)}
+                        </Text>
+                        <Text style={styles.saleprice}>₫{genPrice((price - price * sale) * 1000)}</Text>
+                    </View>
+                ) : (
+                    <View>
+                        <Text style={[styles.itemprice]}>₫{genPrice(price * 1000)}</Text>
+                    </View>
+                )}
                 <Text style={styles.itemquantyti}>x{quantity}</Text>
             </View>
         </View>
@@ -55,13 +67,19 @@ const Item = ({ title, srcImage, price, quantity }: ItemProps) => (
 );
 export default function PayPage() {
     const navigation: any = useNavigation();
+    const { currentData } = useSelector((state: any) => state.user);
     const route = useRoute();
-    const [message, setMessage] = useState('');
+    const [isBuy, setIsBuy] = useState<boolean>(true);
     const { oder_params }: any = route.params;
     const [oderData, setOrderData] = useState<ItemProps[]>([]);
     const [priceProduct, setPriceProduct] = useState<number>(0);
+    const [sale, setSale] = useState<number>(0);
     const [showToast, setShowToast] = useState<boolean>(false);
+    const [toastMessage, setToastMessage] = useState<string>('');
     const [showToastFalse, setshowToastFalse] = useState<boolean>(false);
+    const [showToastLocation, setshowToastLocation] = useState<boolean>(false);
+    const [addressUser, setAddressUser] = useState<string>('');
+    const [phoneUser, setPhoneUser] = useState<string>('');
 
     const goToBack = () => {
         navigation.goBack();
@@ -71,37 +89,54 @@ export default function PayPage() {
         console.log({ data });
         setOrderData(data);
         let totalPrice = 0;
+        let totalSale = 0;
         data.forEach((item: ItemProps) => {
-            totalPrice += item.quantity * item.price;
+            totalPrice += item.quantity * item.price * (1 - item.sale);
+            totalSale += item.quantity * item.price * (0 + item.sale);
         });
         setPriceProduct(totalPrice);
+        setSale(totalSale);
     }, [oder_params]);
+    useEffect(() => {
+        if (currentData?.phone) setPhoneUser(currentData.phone);
+        if (currentData?.address) setAddressUser(currentData.address);
+    }, [currentData]);
     const handleBuy = async () => {
         console.log({ oderData });
+        if (!isBuy) return;
         try {
-            // { id: number; title: string; srcImage: string; price: number; quantity: number };
+            if (addressUser.length < 1 || phoneUser.length < 1) {
+                setshowToastLocation(true);
+                return;
+            }
+            setIsBuy(false);
             const response = await order.purchase({
                 data: oderData.map((item) => {
                     console.log({ item });
                     return {
                         product_id: item.id,
-                        total_amount: item.price * item.quantity - 20,
-
-                        shipping_address:
-                            '  ngách 59 ngõ 147 đường 234 phường thanh xuân trung quận thanh xuân thành phố hà nội',
-                        phone_number: '0963465730',
+                        total_amount: item.price * item.quantity * (1 - item.sale),
+                        quantity: item.quantity,
+                        shipping_address: addressUser,
+                        phone_number: phoneUser,
+                        sale: item.sale * item.price * item.quantity,
                     };
                 }),
                 order_date: new Date(),
+                sale,
+                total_order_amount: priceProduct,
             });
             console.log('no bug');
             console.log({ response });
             setShowToast(true);
+            setToastMessage(response?.data?.msg);
             setTimeout(() => {
-                navigation.navigate('home', {});
+                setIsBuy(true);
+                if (response?.data?.err === 0) navigation.navigate('home', {});
             }, 1000);
         } catch (error) {
             console.log(error);
+            setIsBuy(true);
             setshowToastFalse(true);
         }
     };
@@ -131,14 +166,12 @@ export default function PayPage() {
                             <Text>Địa chỉ nhận hàng</Text>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                <Text style={{ fontSize: 16 }}>Thanh Nhi</Text>
+                                <Text style={{ fontSize: 16 }}>{currentData.name}</Text>
                                 <Text>|</Text>
-                                <Text>0963465730</Text>
+                                <Text>{phoneUser}</Text>
                             </View>
                             <View>
-                                <Text>
-                                    ngách 59 ngõ 147 đường 234 phường thanh xuân trung quận thanh xuân thành phố hà nội
-                                </Text>
+                                <Text>{addressUser}</Text>
                             </View>
                         </View>
                         <View
@@ -169,6 +202,7 @@ export default function PayPage() {
                                     srcImage={data.srcImage}
                                     price={data.price}
                                     quantity={data.quantity}
+                                    sale={data.sale}
                                 />
                                 <View
                                     style={{
@@ -183,7 +217,9 @@ export default function PayPage() {
                                     }}
                                 >
                                     <Text style={{ fontSize: 16 }}>Thành tiền ({data.quantity} sản phẩm): </Text>
-                                    <Text style={{ color: 'red' }}>₫{genPrice(data.price * data.quantity * 1000)}</Text>
+                                    <Text style={{ color: 'red' }}>
+                                        ₫{genPrice(data.price * (1 - data.sale) * data.quantity * 1000)}
+                                    </Text>
                                 </View>
                             </View>
                         ))}
@@ -196,19 +232,16 @@ export default function PayPage() {
                         <View>
                             <View style={styles.flexRow}>
                                 <Text>Tổng tiền hàng</Text>
-                                <Text style={{ color: 'red' }}>₫{genPrice(priceProduct * 1000)}</Text>
+                                <Text style={{ color: 'red' }}>₫{genPrice((priceProduct + sale) * 1000)}</Text>
                             </View>
                             <View style={styles.flexRow}>
                                 <Text>Tổng cộng Voucher giảm giá</Text>
-                                <Text style={{ color: 'red' }}>₫{genPrice(20 * 1000)}</Text>
+                                <Text style={{ color: 'red' }}>₫{genPrice(sale * 1000)}</Text>
                             </View>
                             <View style={styles.flexFooter}>
                                 <Text style={{ fontSize: 18, fontWeight: '900' }}>Tổng thanh toán</Text>
                                 <Text style={{ fontSize: 18, fontWeight: '900', color: 'red' }}>
-                                    ₫
-                                    {priceProduct * 1000 - 20 * 1000 > 0
-                                        ? genPrice(priceProduct * 1000 - 20 * 1000)
-                                        : 0}
+                                    ₫{priceProduct * 1000 > 0 ? genPrice(priceProduct * 1000) : 0}
                                 </Text>
                             </View>
                         </View>
@@ -228,7 +261,7 @@ export default function PayPage() {
                     <Text style={styles.purchase_price1}>Tổng thanh toán</Text>
                     <Text style={styles.purchase_price2}>
                         {' '}
-                        ₫{priceProduct * 1000 - 20 * 1000 > 0 ? genPrice(priceProduct * 1000 - 20 * 1000) : 0}
+                        ₫{priceProduct * 1000 > 0 ? genPrice(priceProduct * 1000) : 0}
                     </Text>
                 </View>
                 <TouchableOpacity onPress={handleBuy}>
@@ -238,13 +271,18 @@ export default function PayPage() {
                     </View>
                 </TouchableOpacity>
             </View>
-            {showToast && (
-                <Toast message="Mua hàng thành công" onHide={() => setShowToast(false)} icon={'checkcircleo'} />
-            )}
+            {showToast && <Toast message={toastMessage} onHide={() => setShowToast(false)} icon={'checkcircleo'} />}
             {showToastFalse && (
                 <Toast
                     message="Có lỗi xảy ra vui lòng thử lại"
                     onHide={() => setshowToastFalse(false)}
+                    icon={'exclamationcircle'}
+                />
+            )}
+            {showToastLocation && (
+                <Toast
+                    message="Vui lòng nhập đủ thông tin số điện thoại, địa chỉ"
+                    onHide={() => setshowToastLocation(false)}
                     icon={'exclamationcircle'}
                 />
             )}
@@ -339,6 +377,10 @@ const styles = StyleSheet.create({
     },
     itemprice: {
         fontSize: 16,
+    },
+    saleprice: {
+        fontSize: 16,
+        color: 'red',
     },
     itemquantyti: {},
     footerBuy: {

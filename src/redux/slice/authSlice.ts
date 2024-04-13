@@ -37,8 +37,19 @@ export const LoginApi: any = createAsyncThunk('auth/Login', async (data: any) =>
         } else {
             return response?.data;
         }
-    } catch (error) {
-        return null;
+    } catch (error: any) {
+        let data;
+        if (error?.response) {
+            // Nếu có phản hồi từ server
+            data = error?.response?.data;
+        } else if (error?.request) {
+            // Nếu không có phản hồi từ server
+            data = { err: -1, msg: 'Server bị lỗi vui lòng thử lại' };
+        } else {
+            // Nếu có lỗi xảy ra khi gửi request
+            data = { err: -1, msg: 'Request error' };
+        }
+        return data;
     }
 });
 
@@ -88,7 +99,7 @@ const authSlice = createSlice({
                 if (action?.payload?.err === 0) {
                     state.isLoggedIn = true;
                     state.token = action.payload.token;
-                    state.msg = '';
+                    state.msg = action.payload.msg;
                 } else {
                     state.isLoggedIn = false;
                     state.msg = action.payload?.msg;
@@ -98,6 +109,7 @@ const authSlice = createSlice({
             .addCase(LoginApi.rejected, (state, action) => {
                 state.isLoggedIn = false;
                 state.token = null;
+                console.log({ ob3: action });
             });
     },
 });

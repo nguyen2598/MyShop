@@ -100,5 +100,33 @@ const product = {
             throw error;
         }
     },
+    async updateProduct(
+        data: {
+            title: string;
+            description: string;
+            price: string;
+            quantity: string;
+            categoryCode: string;
+            images: string[];
+        },
+        id: number,
+    ) {
+        const url = `/api/product/update-product?productId=${id}`;
+        try {
+            const response = await axiosClient.post(url, data);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
+    async deleteProduct(id: number) {
+        const url = `/api/product/delete-product?productId=${id}`;
+        try {
+            const response = await axiosClient.delete(url);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
 };
 export default product;

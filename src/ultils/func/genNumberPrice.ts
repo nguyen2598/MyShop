@@ -1,3 +1,5 @@
 export default function genPrice(price: number) {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return parseFloat(price.toFixed(1))
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }

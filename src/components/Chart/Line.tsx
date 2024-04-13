@@ -12,22 +12,22 @@ const chartConfig = {
     barPercentage: 0.5,
     useShadowColorFromDataset: false, // optional
 };
-const data = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-    datasets: [
-        {
-            data: [20, 45, 28, 80, 99, 43],
-            color: (opacity = 1) => `rgba(0,0,0, ${opacity})`, // optional
-            strokeWidth: 2, // optional
-        },
-    ],
-    legend: ['Rainy Days'], // optional
-};
-export default function Line() {
+
+export default function Line({ labels, data }: { labels: string[]; data: number[] }) {
     return (
         <View>
             <LineChart
-                data={data}
+                data={{
+                    labels: labels,
+                    datasets: [
+                        {
+                            data: data,
+                            color: (opacity = 1) => `rgba(0,0,0, ${opacity})`, // optional
+                            strokeWidth: 2, // optional
+                        },
+                    ],
+                    legend: ['Rainy Days'], // optional
+                }}
                 width={screenWidth}
                 height={256}
                 verticalLabelRotation={30}

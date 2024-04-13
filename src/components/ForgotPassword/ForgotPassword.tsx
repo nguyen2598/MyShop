@@ -1,19 +1,19 @@
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
-import { Link } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import auth from '@/src/api/auth';
 import { LoginApi } from '@/src/redux/slice';
+import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
+import { Link, useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import Toast from '../Toast/Toast';
 const { width, height } = getWidthHeightScreen;
 type FormValues = {
     email: string;
-    password: string;
 };
-export default function SignIn() {
+export default function ForgotPassword() {
     const dispatch = useDispatch();
-    const { msg } = useSelector((state: any) => state.auth);
+    const navigation: any = useNavigation();
     const [showToast, setShowToast] = useState<boolean>(false);
     const [toastMessage, setToastMessage] = useState<string>('');
 
@@ -22,15 +22,33 @@ export default function SignIn() {
         handleSubmit,
         formState: { errors },
     } = useForm<FormValues>();
-    const onSubmit = (data: FormValues) => {
-        dispatch(LoginApi(data));
-    };
-    useEffect(() => {
-        if (msg?.length > 0) {
+    const onSubmit = async (data: FormValues) => {
+        try {
+            console.log('co co');
+            const response = await auth.sendmailResetPassword(data);
+            console.log({ response: response?.data });
+            if (response?.data?.err === 0) {
+                navigation.navigate('complete-password', {
+                    email: data.email,
+                });
+            } else {
+            }
+        } catch (error: any) {
+            let data;
+            if (error.response) {
+                // Nếu có phản hồi từ server
+                data = error.response.data;
+            } else if (error.request) {
+                // Nếu không có phản hồi từ server
+                data = { err: -1, msg: 'Server bị lỗi vui lòng thử lại' };
+            } else {
+                // Nếu có lỗi xảy ra khi gửi request
+                data = { err: -1, msg: 'Request error' };
+            }
+            setToastMessage(data?.msg);
             setShowToast(true);
         }
-        setToastMessage(msg);
-    }, [msg]);
+    };
     return (
         <View
             style={{
@@ -41,9 +59,9 @@ export default function SignIn() {
                 alignItems: 'center',
             }}
         >
-            <View>
+            {/* <View>
                 <Image source={require('../../../assets/Login.png')} style={{ height: 60, width: 180 }}></Image>
-            </View>
+            </View> */}
             <View>
                 <Controller
                     control={control}
@@ -69,54 +87,16 @@ export default function SignIn() {
                 </View>
             </View>
 
-            <View>
-                <Controller
-                    control={control}
-                    render={({ field }) => (
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder="Mật khẩu"
-                            secureTextEntry
-                            onChangeText={field.onChange}
-                            value={field.value}
-                        />
-                    )}
-                    name="password"
-                    rules={{
-                        required: 'Vui lòng nhập mật khẩu',
-                        minLength: {
-                            value: 6,
-                            message: 'Mật khẩu phải có ít nhất 6 ký tự',
-                        },
-                    }}
-                />
-                <View>
-                    <Text style={styles.spanErr}>{errors.password ? errors.password.message : ''}</Text>
-                </View>
-            </View>
-            <View
-                style={[
-                    styles.redirect,
-                    { justifyContent: 'flex-end', width: '100%', paddingRight: 36, marginBottom: 3 },
-                ]}
-            >
-                <Link to={{ screen: 'forgot-password', params: { id: 'jane' } }} style={styles.linkText}>
-                    Forgot password?
-                </Link>
-            </View>
-
-            <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-                <Text style={styles.btn}>Đăng nhập</Text>
-            </TouchableOpacity>
             <View style={styles.redirect}>
-                <Text>Bạn chưa có tải khoản?</Text>
-                <Link to={{ screen: 'signup', params: { id: 'jane' } }} style={styles.linkText}>
-                    Đăng ký
+                <Text>Đã có tài khoản?</Text>
+                <Link to={{ screen: 'login', params: { id: 'jane' } }} style={styles.linkText}>
+                    Đăng nhập
                 </Link>
             </View>
-            {showToast && (
-                <Toast message={toastMessage} onHide={() => setShowToast(false)} icon={'exclamationcircle'} />
-            )}
+            <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+                <Text style={styles.btn}>Tìm tài khoản</Text>
+            </TouchableOpacity>
+            {showToast && <Toast message={toastMessage} onHide={() => setShowToast(false)} icon={'checkcircleo'} />}
         </View>
     );
 }

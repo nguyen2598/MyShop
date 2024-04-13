@@ -60,9 +60,7 @@ export default function ReviewPage() {
                         }}
                     />
                     <View style={{ flex: 6 }}>
-                        <Text style={{ fontSize: 16, fontWeight: '400' }}>
-                            Cách đánh giá sản phẩm để nhận được xu trên Shopee tối đa.
-                        </Text>
+                        <Text style={{ fontSize: 16, fontWeight: '400' }}>Cách đánh giá sản phẩm.</Text>
                         <Text></Text>
                     </View>
                 </View>
@@ -94,7 +92,7 @@ export default function ReviewPage() {
                 <View style={styles.bodyreview}>
                     <View style={styles.reviewimage}>
                         {/* <ScrollView horizontal> */}
-                        <View style={{ padding: 4, width: width / 4, height: width / 4 }}>
+                        <View style={{ padding: 4, width: (width - 20) / 4, height: (width - 20) / 4 }}>
                             <TouchableOpacity
                                 // onPress={selectImages}
                                 style={{
@@ -115,7 +113,7 @@ export default function ReviewPage() {
                             </TouchableOpacity>
                         </View>
                         {imageUris?.map((uri, index) => (
-                            <View key={index} style={{ padding: 4, width: width / 4, height: width / 4 }}>
+                            <View key={index} style={{ padding: 4, width: (width - 20) / 4, height: (width - 20) / 4 }}>
                                 <Image
                                     key={index}
                                     source={{
@@ -133,8 +131,15 @@ export default function ReviewPage() {
                         ))}
                         {/* </ScrollView> */}
                     </View>
+
                     <View style={styles.reviewtext}>
-                        <TextInput multiline={true} numberOfLines={10} textAlignVertical="top" />
+                        <TextInput
+                            multiline={true}
+                            numberOfLines={5}
+                            textAlignVertical="top"
+                            placeholder="Vui lòng ghi đánh giá vào đây"
+                            style={{ padding: 8 }}
+                        />
                     </View>
                 </View>
             </View>
@@ -177,11 +182,13 @@ const styles = StyleSheet.create({
     star: {},
     bodyreview: {},
     reviewimage: {
+        padding: 10,
         flexDirection: 'row',
         flexWrap: 'wrap',
     },
     reviewtext: {
-        // borderColor: 'red',
-        borderWidth: 2,
+        margin: 14,
+        borderColor: '#cccccc',
+        borderWidth: 1,
     },
 });

@@ -23,7 +23,7 @@ const IconMenu: ItemNavProps[] = [
     {
         title: 'Thông báo',
         icon: <IconIonicons name="notifications" size={30} color="#cccccc" />,
-        path: 'shop',
+        path: 'notification',
     },
 ];
 

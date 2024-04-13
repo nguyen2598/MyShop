@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ConfirmRegister, SignIn, SignUp } from '@/src/components';
+import { CompletePassword, ConfirmRegister, ForgotPassword, SignIn, SignUp } from '@/src/components';
 import getWidthHeightScreen from '@/src/ultils/func/getWidthHeightScreen';
 import { useSelector } from 'react-redux';
 const { width, height } = getWidthHeightScreen;
@@ -19,11 +19,13 @@ export default function Authentication({ navigation }: { navigation: any }) {
         }
     }, [isLoggedIn]);
     return (
-        <View style={{ flex: 1, backgroundColor: 'red' }}>
+        <View style={{ flex: 1 }}>
             <Stack.Navigator initialRouteName="login">
                 <Stack.Screen name="login" component={SignIn} options={{ headerShown: false }} />
                 {/* Đổi tên hiển thị của Header */}
                 <Stack.Screen name="signup" component={SignUp} options={{ headerShown: false }} />
+                <Stack.Screen name="forgot-password" component={ForgotPassword} options={{ headerShown: false }} />
+                <Stack.Screen name="complete-password" component={CompletePassword} options={{ headerShown: false }} />
             </Stack.Navigator>
         </View>
     );
