@@ -19,8 +19,8 @@ const order = {
             throw error;
         }
     },
-    async getOrderItemToUser() {
-        const url = '/api/order/get-order-item';
+    async getOrderItemToUser(page: number) {
+        const url = `/api/order/get-order-item?page=${page}`;
         try {
             const response = await axiosClient.get(url);
             return response;
@@ -28,10 +28,21 @@ const order = {
             throw error;
         }
     },
-    async getOrderItemToAdmin() {
-        const url = '/api/order/get-order-item-admin';
+    async getOrderItemToAdmin(params: object) {
+        const url = `/api/order/get-order-item-admin`;
         try {
-            const response = await axiosClient.get(url);
+            const response = await axiosClient.get(url, {
+                params: params,
+            });
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
+    async approve(data: object) {
+        const url = '/api/order/approve';
+        try {
+            const response = await axiosClient.put(url, data);
             return response;
         } catch (error) {
             throw error;

@@ -27,5 +27,14 @@ const cart = {
             throw error;
         }
     },
+    async deleteCart(id: number) {
+        const url = `/api/cart/delete-cart/${id}`;
+        try {
+            const response = await axiosClient.delete(url);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
 };
 export default cart;

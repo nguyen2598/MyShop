@@ -3,6 +3,7 @@ import covertDateToString from '@/src/ultils/func/genDate';
 import genPrice from '@/src/ultils/func/genNumberPrice';
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 interface IOrderItem {
     order_code: string;
     order_detail_code: string;
@@ -27,20 +28,38 @@ export default function OderHistory({ navigation }: { navigation: any }) {
         navigation.goBack();
     };
     const [dataOrder, setDataOrder] = useState<IOrderItem[]>([]);
+    const [page, setPage] = useState<number>(1);
+    const [isLoad, setIsLoad] = useState<boolean>(true);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response: any = await order.getOrderItemToUser();
-                setDataOrder(response.data.response.rows);
-                console.log({ response });
+                const response: any = await order.getOrderItemToUser(page);
+                if (response?.data?.response?.rows) {
+                    setDataOrder((prev) => [...prev, ...response.data.response.rows]);
+                }
+                if (response?.data?.response?.rows?.length === 0) {
+                    setIsLoad(false);
+                }
             } catch (error) {
                 setDataOrder([]);
             }
         };
         fetchData();
-    }, []);
+    }, [page]);
+    const handleScroll = (event: any) => {
+        if (!isLoad) return;
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const isEndReached = layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
+
+        if (isEndReached) {
+            setPage((prev) => prev + 1);
+            // setIsLoad(true);
+        } else {
+            // setIsLoad(false);
+        }
+    };
     return (
-        <ScrollView>
+        <ScrollView onScroll={handleScroll}>
             <View style={styles.container}>
                 <View style={styles.body}>
                     {dataOrder?.map((item, index) => (
@@ -103,6 +122,19 @@ export default function OderHistory({ navigation }: { navigation: any }) {
                     ))}
                 </View>
             </View>
+            {!isLoad ? (
+                <Text
+                    style={{
+                        color: '#FF9900',
+                        marginTop: 10,
+                        textAlign: 'center',
+                    }}
+                >
+                    Hết đơn hàng
+                </Text>
+            ) : (
+                <ActivityIndicator size="large" color="#FF9900" />
+            )}
         </ScrollView>
         // <View>
         //     <Pie />

@@ -24,9 +24,7 @@ export default function ForgotPassword() {
     } = useForm<FormValues>();
     const onSubmit = async (data: FormValues) => {
         try {
-            console.log('co co');
             const response = await auth.sendmailResetPassword(data);
-            console.log({ response: response?.data });
             if (response?.data?.err === 0) {
                 navigation.navigate('complete-password', {
                     email: data.email,

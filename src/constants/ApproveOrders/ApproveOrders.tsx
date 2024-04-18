@@ -2,9 +2,10 @@ import order from '@/src/api/order';
 import covertDateToString from '@/src/ultils/func/genDate';
 import genPrice from '@/src/ultils/func/genNumberPrice';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-elements';
+import IconAntDesign from 'react-native-vector-icons/AntDesign';
 
 interface IOrderItem {
     order_code: string;
@@ -38,15 +39,20 @@ type PickerItem = {
     icon: any;
 };
 import Modal from 'react-native-modal';
+import { useNavigation } from '@react-navigation/native';
 
 const OrderModal = ({
     isVisible,
     closeModal,
     orderData,
+    mode,
+    setDataOrder,
 }: {
     isVisible: boolean;
     closeModal: any;
+    setDataOrder: any;
     orderData: IOrderItem | undefined;
+    mode: 'pending' | 'confirmed' | 'intransit' | 'completed';
 }) => {
     const [open, setOpen] = useState<boolean>(false);
     const [items, setItem] = useState<PickerItem[]>([
@@ -67,11 +73,44 @@ const OrderModal = ({
         },
     ]);
     const [selectedValue, setSelectedValue] = useState<string>('');
+    const handleComfirm = async () => {
+        try {
+            await order.approve({ status: 'confirmed', order_id: orderData?.order_detail_code });
+            fetchData();
+        } catch (error) {}
+    };
+    const handleIntransit = async () => {
+        try {
+            await order.approve({ status: 'intransit', order_id: orderData?.order_detail_code });
+            fetchData();
+        } catch (error) {}
+    };
+    const handleCompleted = async () => {
+        try {
+            await order.approve({ status: 'completed', order_id: orderData?.order_detail_code });
+            fetchData();
+        } catch (error) {}
+    };
+    const handleCancelledOrder = async () => {
+        try {
+            await order.approve({ status: 'cancelled', order_id: orderData?.order_detail_code });
+            fetchData();
+        } catch (error) {}
+    };
+    const fetchData = async () => {
+        try {
+            const response: any = await order.getOrderItemToAdmin({ status: mode, page: 1 });
+            setDataOrder(response.data.response.rows);
+            console.log({ response });
+        } catch (error) {
+            setDataOrder([]);
+        }
+    };
     return (
         <Modal isVisible={isVisible} onBackdropPress={closeModal}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <View style={{ backgroundColor: 'white', padding: 20 }}>
-                    <Text style={{ fontSize: 18, marginBottom: 10 }}>Đơn hàng</Text>
+                    <Text style={{ fontSize: 18, marginBottom: 10, width: 300 }}>Đơn hàng</Text>
                     <View style={styles.wrapperModal}>
                         <Text style={styles.wrapperModalLeft}>Mã đơn: </Text>
                         <Text style={styles.wrapperModalRight}>{orderData?.order_detail_code}</Text>
@@ -100,7 +139,7 @@ const OrderModal = ({
                         <Text style={styles.wrapperModalLeft}>Thời gian đặt:</Text>
                         <Text style={styles.wrapperModalRight}>{covertDateToString(orderData?.order_date || '')}</Text>
                     </View>
-                    <DropDownPicker
+                    {/* <DropDownPicker
                         open={open}
                         setOpen={setOpen}
                         items={items}
@@ -109,31 +148,53 @@ const OrderModal = ({
                         setItems={setItem}
                         containerStyle={{ height: 40 }}
                         style={{ backgroundColor: '#fafafa', marginBottom: 30 }}
-                    />
-                    <View style={{ marginTop: 20 }}>
-                        <Button title="Close" onPress={closeModal} />
-                    </View>
+                    /> */}
+                    {mode === 'pending' ? (
+                        <View style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Button title="Hủy đơn hàng" onPress={handleCancelledOrder} buttonStyle={{ padding: 10 }} />
+                            <Button title="Duyệt đơn" onPress={handleComfirm} buttonStyle={{ padding: 10 }} />
+                        </View>
+                    ) : mode === 'confirmed' ? (
+                        <View style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Button title="Đóng" onPress={closeModal} buttonStyle={{ padding: 10 }} />
+                            <Button title="Giao hàng" onPress={handleIntransit} buttonStyle={{ padding: 10 }} />
+                        </View>
+                    ) : mode === 'intransit' ? (
+                        <View style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Button title="Đóng" onPress={closeModal} buttonStyle={{ padding: 10 }} />
+                            <Button title="Duyệt đơn" onPress={handleCompleted} buttonStyle={{ padding: 10 }} />
+                        </View>
+                    ) : (
+                        ''
+                    )}
                 </View>
             </View>
         </Modal>
     );
 };
 export default function ApproveOrders() {
+    const navigation: any = useNavigation();
     const [dataOrder, setDataOrder] = useState<IOrderItem[]>([]);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
     const [selectedOrder, setSelectedOrder] = useState<IOrderItem | undefined>();
+    const [mode, setMode] = useState<'pending' | 'confirmed' | 'intransit' | 'completed'>('pending');
+    const goToBack = () => {
+        navigation.goBack();
+    };
+    console.log({ mode });
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response: any = await order.getOrderItemToAdmin();
+                const response: any = await order.getOrderItemToAdmin({ status: mode, page: 1 });
                 setDataOrder(response.data.response.rows);
                 console.log({ response });
             } catch (error) {
                 setDataOrder([]);
+                console.log({ error });
             }
         };
         fetchData();
-    }, []);
+    }, [mode]);
     const openModal = (order: IOrderItem) => {
         setSelectedOrder(order);
         setIsModalVisible(true);
@@ -146,6 +207,60 @@ export default function ApproveOrders() {
     return (
         <ScrollView>
             <View style={styles.container}>
+                <View style={styles.headerSearch}>
+                    <TouchableOpacity onPress={goToBack}>
+                        <IconAntDesign name="arrowleft" size={36} color="#28b08a" />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 16 }}>Duyệt đơn</Text>
+                </View>
+                <View style={styles.menu}>
+                    <ScrollView horizontal>
+                        <TouchableOpacity onPress={() => setMode('pending')}>
+                            <View
+                                style={
+                                    mode === 'pending'
+                                        ? [styles.menuItem, { borderBottomColor: 'red', borderBottomWidth: 2 }]
+                                        : styles.menuItem
+                                }
+                            >
+                                <Text>Chờ duyệt</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setMode('confirmed')}>
+                            <View
+                                style={
+                                    mode === 'confirmed'
+                                        ? [styles.menuItem, { borderBottomColor: 'red', borderBottomWidth: 2 }]
+                                        : styles.menuItem
+                                }
+                            >
+                                <Text>Đã duyệt</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setMode('intransit')}>
+                            <View
+                                style={
+                                    mode === 'intransit'
+                                        ? [styles.menuItem, { borderBottomColor: 'red', borderBottomWidth: 2 }]
+                                        : styles.menuItem
+                                }
+                            >
+                                <Text>Đang giao hàng</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setMode('completed')}>
+                            <View
+                                style={
+                                    mode === 'completed'
+                                        ? [styles.menuItem, { borderBottomColor: 'red', borderBottomWidth: 2 }]
+                                        : styles.menuItem
+                                }
+                            >
+                                <Text>Đã giao hàng</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </ScrollView>
+                </View>
                 <View style={styles.body}>
                     {dataOrder?.map((item, index) => (
                         <TouchableOpacity key={index} onPress={() => openModal(item)}>
@@ -216,7 +331,13 @@ export default function ApproveOrders() {
                     ))}
                 </View>
             </View>
-            <OrderModal isVisible={isModalVisible} closeModal={closeModal} orderData={selectedOrder} />
+            <OrderModal
+                isVisible={isModalVisible}
+                closeModal={closeModal}
+                orderData={selectedOrder}
+                mode={mode}
+                setDataOrder={setDataOrder}
+            />
         </ScrollView>
         // <View>
         //     <Pie />
@@ -229,6 +350,38 @@ export default function ApproveOrders() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: StatusBar.currentHeight || 0,
+        // backgroundColor: '#ffffff',
+    },
+    headerSearch: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        padding: 10,
+        gap: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#cccccc',
+    },
+    menu: {
+        // backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#cccccc',
+    },
+    menuItem: {
+        padding: 8,
+        marginRight: 12,
+    },
+    shadowHeader: {
+        padding: 1,
+        borderRadius: 2,
+        overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.7,
+        elevation: 2,
     },
     body: {
         padding: 10,

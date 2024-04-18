@@ -24,11 +24,12 @@ export default function SignIn() {
     } = useForm<FormValues>();
     const onSubmit = (data: FormValues) => {
         dispatch(LoginApi(data));
+        setShowToast(true);
     };
     useEffect(() => {
-        if (msg?.length > 0) {
-            setShowToast(true);
-        }
+        // if (msg?.length > 0) {
+        //     setShowToast(true);
+        // }
         setToastMessage(msg);
     }, [msg]);
     return (

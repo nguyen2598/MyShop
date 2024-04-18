@@ -28,7 +28,6 @@ export default function Screen() {
     const dispatch = useDispatch();
     const { isLoggedIn, token } = useSelector((state: any) => state.auth);
     const { currentData } = useSelector((state: any) => state.user);
-    // console.log({ currentData, isLoggedIn, token });
     useEffect(() => {
         const timeOut = setTimeout(() => {
             isLoggedIn && dispatch(getCurrent());
@@ -48,7 +47,6 @@ export default function Screen() {
             }
             roomRef.current = currentData?.id;
             joinRoom(currentData?.id);
-            console.log('co vao day', currentData?.id);
         }
     }, [currentData]);
     const joinRoom = (id: string) => {
@@ -87,7 +85,7 @@ export default function Screen() {
                 <Stack.Screen name="statistical" component={Statistical} options={{ headerShown: false }} />
                 <Stack.Screen name="product-manage" component={ProductManagement} options={{ headerShown: false }} />
                 <Stack.Screen name="review" component={ReviewPage} options={{ headerShown: false }} />
-                <Stack.Screen name="approve-orders" component={ApproveOrders} options={{ title: 'Duyệt đơn' }} />
+                <Stack.Screen name="approve-orders" component={ApproveOrders} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     );

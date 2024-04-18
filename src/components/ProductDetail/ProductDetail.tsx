@@ -159,11 +159,11 @@ export default function ProductDetail() {
                 {
                     text: 'Hủy',
                     onPress: () => {
-                        product.deleteProduct(id);
+                        console.log('OK Pressed');
                     },
                     style: 'cancel',
                 },
-                { text: 'Xác nhận', onPress: () => console.log('OK Pressed') },
+                { text: 'Xác nhận', onPress: () => product.deleteProduct(id) },
             ],
             { cancelable: false },
         );

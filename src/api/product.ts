@@ -120,7 +120,7 @@ const product = {
         }
     },
     async deleteProduct(id: number) {
-        const url = `/api/product/delete-product?productId=${id}`;
+        const url = `/api/product/delete/${id}`;
         try {
             const response = await axiosClient.delete(url);
             return response;

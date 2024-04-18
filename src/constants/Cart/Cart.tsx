@@ -8,6 +8,7 @@ import {
     TouchableNativeFeedbackBase,
     TouchableNativeFeedback,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import React, { useEffect, useState } from 'react';
@@ -20,6 +21,7 @@ import genPrice from '@/src/ultils/func/genNumberPrice';
 import { setTitleHeaderName } from '@/src/redux/slice/titleSlice';
 import dataToString from '@/src/ultils/func/Productencryption';
 import { Toast } from '@/src/components';
+import { getCountCart } from '@/src/redux/slice/cartSlice';
 const { width, height } = getWidthHeightScreen;
 interface ICartItem {
     product_id: number;
@@ -41,16 +43,18 @@ export default function Cart() {
     const [checkedItems, setCheckedItems] = useState<any>([]);
     const [total, setTotal] = useState<number>(0);
     console.log({ checkedItems });
-    useEffect(() => {
-        dispatch(setTitleHeaderName('Giỏ hàng'));
-        if (currentData === null) return;
-        const fetchData = async () => {
+    const fetchData = async () => {
+        try {
             const query = `?page=1&user_id=${currentData?.id}`;
             const response: any = await cart.get20LimitCart(query);
             if (response?.data?.err === 0) {
                 setCartData(response.data?.response?.rows);
             }
-        };
+        } catch (error) {}
+    };
+    useEffect(() => {
+        dispatch(setTitleHeaderName('Giỏ hàng'));
+        if (currentData === null) return;
         fetchData();
         return () => {
             dispatch(setTitleHeaderName('Trang chủ'));
@@ -107,7 +111,42 @@ export default function Cart() {
         }
     };
     const [showToast, setShowToast] = useState(false);
-
+    const deleteCart = async (id: number) => {
+        try {
+            console.log({ id });
+            if (!id) {
+                return;
+            }
+            const response = await cart.deleteCart(id);
+            console.log({ response });
+        } catch (error) {
+            console.log({ error });
+        }
+    };
+    const handleDeleteCart = async (id: number) => {
+        Alert.alert(
+            'Xác nhận xóa giỏ hàng',
+            'Bạn có chắc muốn xóa giỏ hàng này?',
+            [
+                {
+                    text: 'Hủy',
+                    onPress: () => {
+                        console.log('huy');
+                    },
+                    style: 'cancel',
+                },
+                {
+                    text: 'Xác nhận',
+                    onPress: () => {
+                        deleteCart(id);
+                        fetchData();
+                        dispatch(getCountCart(currentData.id));
+                    },
+                },
+            ],
+            { cancelable: false },
+        );
+    };
     return (
         // <View>
         <View style={{ backgroundColor: '#ddd', flex: 1 }}>
@@ -167,9 +206,11 @@ export default function Cart() {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            <View style={styles.close}>
-                                <IconAntDesign name="close" size={24} color="#FF0000" />
-                            </View>
+                            <TouchableOpacity onPress={() => handleDeleteCart(item?.id)}>
+                                <View style={styles.close}>
+                                    <IconAntDesign name="close" size={24} color="#FF0000" />
+                                </View>
+                            </TouchableOpacity>
                         </View>
                     ))}
                 </ScrollView>

@@ -51,6 +51,8 @@ export default function Search() {
     const [dataSearch, setDataSearch] = useState<IProductSearch[]>([]);
     const [searchDistance, setSearchDistance] = useState<object>({});
     const [selectedButtonsQuantitySold, setSelectedButtonsQuantitySold] = useState<number[][]>([]);
+    const [page, setPage] = useState<number>(1);
+    const [isLoad, setIsLoad] = useState<boolean>(true);
 
     useEffect(() => {
         // const fetchData = async () => {
@@ -96,6 +98,7 @@ export default function Search() {
     const handleInputSubmit = async (text: string) => {
         const fetchData = async () => {
             handleReset();
+            setPage(1);
             const code =
                 mode === 'handmade'
                     ? `THM`
@@ -129,11 +132,9 @@ export default function Search() {
             //  `?modeSearch=${modeSearch}&${Object.keys(searchDistance[0])[0]}=${JSON.stringify(
             //     searchDistance[0][Object.keys(searchDistance[0])[0]],
             // )}&${Object.keys(searchDistance[1])[0]}=${searchDistance[1][Object.keys(searchDistance[1])[0]]}`;
-            console.log(1, { query });
             try {
                 const response: any = await product.getProductbyCateCodeApi(query);
                 if (response?.data?.err === 0) {
-                    console.log({ datas: response?.data?.response?.rows });
                     setDataSearch(response?.data?.response?.rows);
                 }
             } catch (error) {}
@@ -195,6 +196,7 @@ export default function Search() {
     };
     const handleApply = () => {
         const fetchData = async () => {
+            setPage(1);
             const code =
                 mode === 'handmade'
                     ? `THM`
@@ -228,17 +230,66 @@ export default function Search() {
             //  `?modeSearch=${modeSearch}&${Object.keys(searchDistance[0])[0]}=${JSON.stringify(
             //     searchDistance[0][Object.keys(searchDistance[0])[0]],
             // )}&${Object.keys(searchDistance[1])[0]}=${searchDistance[1][Object.keys(searchDistance[1])[0]]}`;
-            console.log(1, { query });
             try {
                 const response: any = await product.getProductbyCateCodeApi(query);
                 if (response?.data?.err === 0) {
-                    console.log({ datas: response?.data?.response?.rows });
                     setDataSearch(response?.data?.response?.rows);
                 }
-            } catch (error) {}
+            } catch (error) {
+                setDataSearch([]);
+            }
         };
         fetchData();
     };
+    const handleLoadMore = async () => {
+        if (!isLoad) return;
+        const code =
+            mode === 'handmade'
+                ? `THM`
+                : mode === 'clothesMen'
+                ? 'QAN'
+                : mode === 'clothesWon'
+                ? `WMC`
+                : mode === 'bag'
+                ? `TXN`
+                : mode === 'shoe'
+                ? `GNN`
+                : ``;
+        const orderBy =
+            modeSearch === 'new'
+                ? { createdAt: 'DESC' }
+                : modeSearch === 'old'
+                ? { createdAt: 'ASC' }
+                : modeSearch === 'selling'
+                ? { quantity_sold: 'DESC' }
+                : modeSearch === 'icre'
+                ? { price: 'ASC' }
+                : modeSearch === 'desc'
+                ? { price: 'DESC' }
+                : { quantity_sold: 'ASC' };
+        let query: { [key: string]: any } = { querySearch: text, code, page: page + 1, orderBy };
+        setPage((prev) => prev + 1);
+        query = { ...query, ...searchDistance };
+        // searchDistance.forEach((obj) => {
+        //     const keys = Object.keys(obj);
+        //     query[keys[0]] = obj[keys[0]];
+        // });
+        //  `?modeSearch=${modeSearch}&${Object.keys(searchDistance[0])[0]}=${JSON.stringify(
+        //     searchDistance[0][Object.keys(searchDistance[0])[0]],
+        // )}&${Object.keys(searchDistance[1])[0]}=${searchDistance[1][Object.keys(searchDistance[1])[0]]}`;
+        try {
+            const response: any = await product.getProductbyCateCodeApi(query);
+            if (response?.data?.err === 0) {
+                setDataSearch((prev) => [...prev, ...response?.data?.response?.rows]);
+            }
+            if (response?.data?.response?.rows?.length === 0) {
+                setIsLoad(false);
+            }
+        } catch (error) {
+            setDataSearch([]);
+        }
+    };
+
     return (
         // <ScrollView style={{ flex: 1, backgroundColor: 'blue' }}>
         <View style={styles.contaner}>
@@ -825,6 +876,7 @@ export default function Search() {
                             </View>
                         ))}
                     </View>
+                    {dataSearch.length > 0 && isLoad ? <Button title={'Xem thêm'} onPress={handleLoadMore} /> : ''}
                 </ScrollView>
             </View>
         </View>
