@@ -178,6 +178,8 @@ export default function ApproveOrders() {
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
     const [selectedOrder, setSelectedOrder] = useState<IOrderItem | undefined>();
     const [mode, setMode] = useState<'pending' | 'confirmed' | 'intransit' | 'completed'>('pending');
+    const [page, setPage] = useState<number>(1);
+    const [isLoad, setIsLoad] = useState<boolean>(true);
     const goToBack = () => {
         navigation.goBack();
     };
@@ -185,6 +187,8 @@ export default function ApproveOrders() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setPage(1);
+                setIsLoad(true);
                 const response: any = await order.getOrderItemToAdmin({ status: mode, page: 1 });
                 setDataOrder(response.data.response.rows);
                 console.log({ response });
@@ -195,6 +199,21 @@ export default function ApproveOrders() {
         };
         fetchData();
     }, [mode]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response: any = await order.getOrderItemToAdmin({ status: mode, page: page });
+                setDataOrder(response.data.response.rows);
+                if (response.data.response.rows.length < 1) setIsLoad(false);
+                console.log({ response });
+            } catch (error) {
+                setDataOrder([]);
+                console.log({ error });
+            }
+        };
+        fetchData();
+    }, [page]);
+
     const openModal = (order: IOrderItem) => {
         setSelectedOrder(order);
         setIsModalVisible(true);
@@ -203,9 +222,21 @@ export default function ApproveOrders() {
     const closeModal = () => {
         setIsModalVisible(false);
     };
+    const handleScroll = (event: any) => {
+        if (!isLoad) return;
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const isEndReached = layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
+
+        if (isEndReached) {
+            setPage((prev) => prev + 1);
+            // setIsLoad(true);
+        } else {
+            // setIsLoad(false);
+        }
+    };
 
     return (
-        <ScrollView>
+        <ScrollView onScroll={handleScroll}>
             <View style={styles.container}>
                 <View style={styles.headerSearch}>
                     <TouchableOpacity onPress={goToBack}>

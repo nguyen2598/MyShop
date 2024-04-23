@@ -29,9 +29,13 @@ export default function ChangeInfo({ navigation }: { navigation: any }) {
         address: string;
     }) => {
         const update = async () => {
-            const response = await user.updateUser(data);
-            if (response?.data?.err === 0) {
-                dispatch(getCurrent());
+            try {
+                const response = await user.updateUser(data);
+                if (response?.data?.err === 0) {
+                    dispatch(getCurrent());
+                }
+            } catch (error) {
+                console.log('update error', error);
             }
         };
         update();

@@ -26,6 +26,7 @@ import genPrice from '@/src/ultils/func/genNumberPrice';
 import { useDispatch, useSelector } from 'react-redux';
 import Review from '../Review/Review';
 import Toast from '../Toast/Toast';
+import SaleModal from '../SaleModal/SaleModal';
 const { width, height } = getWidthHeightScreen;
 
 interface IRelate {
@@ -90,7 +91,6 @@ export default function ProductDetail() {
 
         scrollToTop();
     }, [id]);
-    console.log({ productData });
     const handleAddToCart = async ({ cart_code, user_id, product_id }: ICartItem) => {
         // Logic to add to cart
         if (currentData === null) {
@@ -168,6 +168,24 @@ export default function ProductDetail() {
             { cancelable: false },
         );
     };
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+    const closeModal = () => {
+        setIsModalVisible(false);
+    };
+    const openModal = () => {
+        setIsModalVisible(true);
+    };
+    const onSave = (saleNumber: number) => {
+        const update = async () => {
+            try {
+                const response = await product.saleProduct({ sale: saleNumber }, id);
+            } catch (error) {
+                console.log('update error', error);
+            }
+        };
+        update();
+    };
+
     return (
         <View style={{ backgroundColor: '#eeeeee', flex: 1, flexDirection: 'column' }}>
             <TouchableOpacity onPress={goToBack} style={styles.backPage}>
@@ -200,8 +218,32 @@ export default function ProductDetail() {
                         </View>
                         <View style={styles.wrapperPr}>
                             <View style={styles.priceWrapper}>
-                                <Text style={styles.priced}>₫</Text>
-                                <Text style={styles.price}>{genPrice(productData?.price! * 1000)}</Text>
+                                {productData?.sale ? (
+                                    <View style={{ flexDirection: 'row', gap: 12 }}>
+                                        <View style={[styles.priceWrapper]}>
+                                            <Text style={[styles.priced, { color: '#000000' }]}>₫</Text>
+                                            <Text
+                                                style={[
+                                                    styles.price,
+                                                    { color: '#000000', textDecorationLine: 'line-through' },
+                                                ]}
+                                            >
+                                                {genPrice(productData?.price! * 1000)}
+                                            </Text>
+                                        </View>
+                                        <View style={[styles.priceWrapper]}>
+                                            <Text style={styles.priced}>₫</Text>
+                                            <Text style={styles.price}>
+                                                {genPrice(productData?.price! * (1 - productData.sale * 1) * 1000)}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ) : (
+                                    <View style={[styles.priceWrapper]}>
+                                        <Text style={styles.priced}>₫</Text>
+                                        <Text style={styles.price}>{genPrice(productData?.price! * 1000)}</Text>
+                                    </View>
+                                )}
                             </View>
                             <View style={styles.priceWrapper}>
                                 <Text style={styles.title}>{productData?.title}</Text>
@@ -217,8 +259,8 @@ export default function ProductDetail() {
                             <Text style={styles.headerText}>Phí vận chuyển</Text>
                         </View>
                         <View>
-                            <Text>Miễn phí vận chuyển cho đơn hàng trên ₫99.000</Text>
-                            <Text>Nhận hàng vào 7/2</Text>
+                            <Text>Miễn phí vận chuyển cho đơn hàng trên ₫1000.000</Text>
+                            {/* <Text>Nhận hàng vào 7/2</Text> */}
                         </View>
                     </View>
                     <View style={styles.contentBox}>
@@ -403,7 +445,7 @@ export default function ProductDetail() {
                         ) : (
                             ''
                         )} */}
-                        <Review />
+                        {productData?.id ? <Review id_product={productData.id} /> : ''}
                     </View>
                 </View>
             </ScrollView>
@@ -437,6 +479,11 @@ export default function ProductDetail() {
                             <Text style={styles.navFooterTextEdit}>Sửa</Text>
                         </View>
                     </TouchableWithoutFeedback>
+                    <TouchableOpacity onPress={openModal} style={styles.navFooterMiddle}>
+                        <View>
+                            <Text style={styles.navFooterTextRight}>Sale</Text>
+                        </View>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => {
                             if (productData) handleDelete(productData.id);
@@ -450,6 +497,7 @@ export default function ProductDetail() {
                             <Text style={styles.navFooterTextRight}>Xóa</Text>
                         </View>
                     </TouchableOpacity>
+                    <SaleModal isVisible={isModalVisible} closeModal={closeModal} onSave={onSave} />
                 </View>
             )}
             {showToast && <Toast message="Đã thêm vào giỏ" onHide={() => setShowToast(false)} icon={'checkcircleo'} />}
@@ -650,6 +698,12 @@ const styles = StyleSheet.create({
     },
     navFooterRight: {
         backgroundColor: '#fc5b31',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    navFooterMiddle: {
+        backgroundColor: '#0000ff',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',

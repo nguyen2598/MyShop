@@ -119,6 +119,20 @@ const product = {
             throw error;
         }
     },
+    async saleProduct(
+        data: {
+            sale: number;
+        },
+        id: number,
+    ) {
+        const url = `/api/product/sale-product?productId=${id}`;
+        try {
+            const response = await axiosClient.post(url, data);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
     async deleteProduct(id: number) {
         const url = `/api/product/delete/${id}`;
         try {

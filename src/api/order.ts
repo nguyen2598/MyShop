@@ -39,6 +39,15 @@ const order = {
             throw error;
         }
     },
+    async getOrderSuccess() {
+        const url = `/api/order/get-order-success`;
+        try {
+            const response = await axiosClient.get(url);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
     async approve(data: object) {
         const url = '/api/order/approve';
         try {

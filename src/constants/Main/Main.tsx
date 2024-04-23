@@ -28,7 +28,6 @@ export default function Main({ navigation }: { navigation: any }) {
     const gotoOrderHistory = () => {
         navigation.navigate('order_history');
     };
-    console.log({ currentDataa: currentData });
     useEffect(() => {
         if (currentData !== null && Object.entries(currentData).length > 0) {
             dispatch(getCountCart(currentData.id));

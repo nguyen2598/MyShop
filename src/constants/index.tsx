@@ -12,3 +12,4 @@ export { default as Statistical } from './Statistical/Statistical';
 export { default as Manage } from './Manage/Manage';
 export { default as ProductManagement } from './ProductManagement/ProductManagement';
 export { default as ApproveOrders } from './ApproveOrders/ApproveOrders';
+export { default as ListProductReview } from './ListProductReview/ListProductReview';

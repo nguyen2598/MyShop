@@ -19,3 +19,4 @@ export { default as Bar } from './Chart/Bar';
 export { default as InforModal } from './InforModal/InforModal';
 export { default as ForgotPassword } from './ForgotPassword/ForgotPassword';
 export { default as CompletePassword } from './CompletePassword/CompletePassword';
+export { default as SaleModal } from './SaleModal/SaleModal';

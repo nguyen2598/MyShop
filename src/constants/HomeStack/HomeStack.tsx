@@ -58,6 +58,10 @@ const CustomDrawerContent = (props: any) => {
                         <IconFontAwesome name="history" size={30} color="#cccccc" />
                         <Text>Lịch sử đặt hàng</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity onPress={() => props.navigation.navigate('list-review')} style={styles.boxItem}>
+                        <IconFontAwesome name="star" size={30} color="#cccccc" />
+                        <Text>Đánh giá sản phẩm</Text>
+                    </TouchableOpacity>
                 </View>
             )}
             {currentData?.role === 0 ? (

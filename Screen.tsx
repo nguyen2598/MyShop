@@ -1,27 +1,25 @@
-import { View, Text } from 'react-native';
-import React, { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ProductDetail } from './src/components';
 import {
+    ApproveOrders,
     Authentication,
     ChangeInfo,
-    Main,
+    ListProductReview,
+    Manage,
+    Notification,
     OderHistory,
     PayPage,
-    Search,
-    Notification,
-    ReviewPage,
-    Manage,
-    Statistical,
     ProductManagement,
-    ApproveOrders,
+    ReviewPage,
+    Search,
+    Statistical,
 } from './src/constants';
 import HomeStack from './src/constants/HomeStack/HomeStack';
-import { ProductDetail } from './src/components';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useDispatch, useSelector } from 'react-redux';
-import { getCurrent, getLogout, logout } from './src/redux/slice';
-import { io } from 'socket.io-client';
-global.socket = io('http://localhost:5000');
+import { getCurrent } from './src/redux/slice';
+// global.socket = io('http://localhost:5000');
 export default function Screen() {
     const roomRef: any = useRef(null);
     const Stack = createNativeStackNavigator();
@@ -36,30 +34,77 @@ export default function Screen() {
             clearTimeout(timeOut);
         };
     }, [isLoggedIn]);
-    useEffect(() => {
-        if (currentData === null || isLoggedIn === false) {
-            dispatch(getLogout(''));
-            dispatch(logout(''));
-        }
-        if (currentData?.id) {
-            if (roomRef?.current) {
-                leaveRoom(roomRef.current);
-            }
-            roomRef.current = currentData?.id;
-            joinRoom(currentData?.id);
-        }
-    }, [currentData]);
-    const joinRoom = (id: string) => {
-        socket.emit('join-room', id);
-    };
-    const leaveRoom = (id: string) => {
-        socket.emit('leave-room', id);
-    };
-    useEffect(() => {
-        socket.on('send_notification', (data) => {
-            console.log({ data });
-        });
-    }, []);
+    // useEffect(() => {
+    //     if (currentData === null || isLoggedIn === false) {
+    //         dispatch(getLogout(''));
+    //         dispatch(logout(''));
+    //     }
+    //     if (currentData?.id) {
+    //         if (roomRef?.current) {
+    //             leaveRoom(roomRef.current);
+    //         }
+    //         roomRef.current = currentData?.id;
+    //         joinRoom(currentData?.id);
+    //     }
+    // }, [currentData]);
+    // const joinRoom = (id: string) => {
+    //     socket.emit('join-room', id);
+    // };
+    // const leaveRoom = (id: string) => {
+    //     socket.emit('leave-room', id);
+    // };
+    // useEffect(() => {
+    //     socket.on('send_notification', (data) => {
+    //         console.log({ data });
+    //     });
+    // }, []);
+
+    // Firebase
+    // useEffect(() => {
+    //     console.log('code day');
+    //     const getDeviceToken = async () => {
+    //         // Lấy token của thiết bị
+    //         try {
+    //             const deviceToken = await messaging().getToken();
+    //             console.log('Token của thiết bị:', deviceToken);
+    //         } catch (error) {
+    //             console.log('err', error);
+    //         }
+
+    //         // Gửi token về máy chủ
+    //         // sendTokenToServer(deviceToken);
+    //     };
+
+    //     getDeviceToken();
+
+    //     // Đăng ký lắng nghe sự kiện khi token thay đổi
+    //     // const unsubscribe = messaging().onTokenRefresh((newToken) => {
+    //     //     console.log('Token mới của thiết bị:', newToken);
+    //     //     // Gửi token mới về máy chủ khi token thay đổi
+    //     //     // sendTokenToServer(newToken);
+    //     // });
+
+    //     // return unsubscribe;
+    // }, []);
+    // const sendTokenToServer = (token) => {
+    //     // Gửi token về máy chủ bằng phương thức POST hoặc một cách phù hợp khác
+    //     fetch('https://your-server.com/api/save-token', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({
+    //             token: token,
+    //         }),
+    //     })
+    //         .then((response) => response.json())
+    //         .then((data) => {
+    //             console.log('Token đã được gửi về máy chủ:', data);
+    //         })
+    //         .catch((error) => {
+    //             console.error('Lỗi khi gửi token về máy chủ:', error);
+    //         });
+    // };
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Main">
@@ -86,6 +131,7 @@ export default function Screen() {
                 <Stack.Screen name="product-manage" component={ProductManagement} options={{ headerShown: false }} />
                 <Stack.Screen name="review" component={ReviewPage} options={{ headerShown: false }} />
                 <Stack.Screen name="approve-orders" component={ApproveOrders} options={{ headerShown: false }} />
+                <Stack.Screen name="list-review" component={ListProductReview} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     );
