@@ -61,7 +61,6 @@ export default function TopProduct({ isAddData, setIsAddData, setIsLoad, isLoad 
         if (isAddData) {
             setPage((prev) => prev + 1);
             const query = `?page=${page + 1}&quantity_sold=DESC`;
-            console.log({ query });
             setIsAddData(false);
             const getData = async () => {
                 const response: any = await product.getTopProducts(query);

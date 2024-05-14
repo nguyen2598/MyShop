@@ -49,7 +49,7 @@ const OrderModal = ({
     setDataOrder,
 }: {
     isVisible: boolean;
-    closeModal: any;
+    closeModal: () => void;
     setDataOrder: any;
     orderData: IOrderItem | undefined;
     mode: 'pending' | 'confirmed' | 'intransit' | 'completed';
@@ -77,31 +77,45 @@ const OrderModal = ({
         try {
             await order.approve({ status: 'confirmed', order_id: orderData?.order_detail_code });
             fetchData();
-        } catch (error) {}
+            closeModal();
+        } catch (error) {
+            closeModal();
+        }
     };
     const handleIntransit = async () => {
         try {
             await order.approve({ status: 'intransit', order_id: orderData?.order_detail_code });
             fetchData();
-        } catch (error) {}
+            closeModal();
+            // closeModal();
+        } catch (error) {
+            closeModal();
+        }
     };
     const handleCompleted = async () => {
         try {
             await order.approve({ status: 'completed', order_id: orderData?.order_detail_code });
             fetchData();
-        } catch (error) {}
+            closeModal();
+            // closeModal();
+        } catch (error) {
+            closeModal();
+        }
     };
     const handleCancelledOrder = async () => {
         try {
             await order.approve({ status: 'cancelled', order_id: orderData?.order_detail_code });
             fetchData();
-        } catch (error) {}
+            closeModal();
+            // closeModal();
+        } catch (error) {
+            closeModal();
+        }
     };
     const fetchData = async () => {
         try {
             const response: any = await order.getOrderItemToAdmin({ status: mode, page: 1 });
             setDataOrder(response.data.response.rows);
-            console.log({ response });
         } catch (error) {
             setDataOrder([]);
         }
@@ -183,7 +197,6 @@ export default function ApproveOrders() {
     const goToBack = () => {
         navigation.goBack();
     };
-    console.log({ mode });
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -191,10 +204,8 @@ export default function ApproveOrders() {
                 setIsLoad(true);
                 const response: any = await order.getOrderItemToAdmin({ status: mode, page: 1 });
                 setDataOrder(response.data.response.rows);
-                console.log({ response });
             } catch (error) {
                 setDataOrder([]);
-                console.log({ error });
             }
         };
         fetchData();
@@ -203,7 +214,7 @@ export default function ApproveOrders() {
         const fetchData = async () => {
             try {
                 const response: any = await order.getOrderItemToAdmin({ status: mode, page: page });
-                setDataOrder(response.data.response.rows);
+                setDataOrder((prev) => [...prev, ...response.data.response.rows]);
                 if (response.data.response.rows.length < 1) setIsLoad(false);
                 console.log({ response });
             } catch (error) {

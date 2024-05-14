@@ -26,7 +26,6 @@ export default function Review({ id_product }: { id_product: number }) {
         const fetchData = async () => {
             try {
                 const response: any = await comment.getReview({ id_product, page });
-                console.log({ response: response.data.response.rows[0].user });
                 if (response.data.response.rows) {
                     setReviewData(response.data.response.rows);
                     setMaxPage(Math.ceil(response.data.response.count / 4));
@@ -86,7 +85,7 @@ export default function Review({ id_product }: { id_product: number }) {
                 </View> */}
                 <View style={styles.contentBody}>
                     {reviewData.map((item, index) => (
-                        <ReviewItem reviewData={item} />
+                        <ReviewItem reviewData={item} key={index} />
                     ))}
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}>

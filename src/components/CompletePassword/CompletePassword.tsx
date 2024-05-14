@@ -29,7 +29,6 @@ export default function CompletePassword() {
         try {
             data.email = email;
             const response = await auth.completeResetPassword(data);
-            console.log({ response: response?.data });
             if (response?.data?.err === 0) {
                 navigation.navigate('login');
             }

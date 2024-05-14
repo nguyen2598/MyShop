@@ -66,7 +66,6 @@ export default function InforModal({
     };
     const handleSave = () => {
         let errors = 0;
-        console.log({ formData });
         if (!formData.name) {
             errors++;
             setValidationErrors((prev) => ({ ...prev, name: 'Không được để trống trường này' }));

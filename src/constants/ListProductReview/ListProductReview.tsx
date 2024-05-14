@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, StyleSheet, Image } from 'react-native';
+import { View, Text, StatusBar, StyleSheet, Image, ScrollView } from 'react-native';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -56,36 +56,38 @@ export default function ListProductReview() {
             </View>
             <View style={styles.shadowHeader}></View>
             <View style={{ paddingBottom: 72, flex: 1 }}>
-                {dataReview.map(({ srcImage, title, date, id, order_detail_code }, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        onPress={() =>
-                            navigation.navigate('review', {
-                                id_product: id,
-                                srcImage: srcImage,
-                                title: title,
-                                order_detail_code: order_detail_code,
-                            })
-                        }
-                    >
-                        <View style={styles.itemwrapper}>
-                            <View>
-                                <Image style={styles.itemimage} source={{ uri: srcImage }} />
-                            </View>
-                            <View style={styles.bodyitem}>
-                                <Text style={styles.itemtitle} numberOfLines={1}>
-                                    {title}
-                                </Text>
-                                <View style={styles.itemwrapperprice}>
-                                    <View>
-                                        <Text style={[styles.itemprice]}>{covertDateToString(date)}</Text>
+                <ScrollView>
+                    {dataReview.map(({ srcImage, title, date, id, order_detail_code }, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() =>
+                                navigation.navigate('review', {
+                                    id_product: id,
+                                    srcImage: srcImage,
+                                    title: title,
+                                    order_detail_code: order_detail_code,
+                                })
+                            }
+                        >
+                            <View style={styles.itemwrapper}>
+                                <View>
+                                    <Image style={styles.itemimage} source={{ uri: srcImage }} />
+                                </View>
+                                <View style={styles.bodyitem}>
+                                    <Text style={styles.itemtitle} numberOfLines={1}>
+                                        {title}
+                                    </Text>
+                                    <View style={styles.itemwrapperprice}>
+                                        <View>
+                                            <Text style={[styles.itemprice]}>{covertDateToString(date)}</Text>
+                                        </View>
+                                        {/* <Text style={styles.itemquantyti}>x{quantity}</Text> */}
                                     </View>
-                                    {/* <Text style={styles.itemquantyti}>x{quantity}</Text> */}
                                 </View>
                             </View>
-                        </View>
-                    </TouchableOpacity>
-                ))}
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
             </View>
         </View>
     );

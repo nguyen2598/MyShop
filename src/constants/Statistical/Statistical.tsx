@@ -34,13 +34,9 @@ export default function Statistical() {
                     </TouchableOpacity>
                     <Text style={{ fontSize: 20 }}>Thống kê</Text>
                 </View>
-                <Text style={{ fontSize: 16, color: 'red', fontWeight: '500' }}>CHỌN</Text>
             </View>
             <View style={styles.body}>
-                <Bar
-                    data={[...statisticalLine.data, ...statisticalLine.data]}
-                    labels={[...statisticalLine.labels, ...statisticalLine.labels]}
-                />
+                <Bar data={[...statisticalLine.data]} labels={[...statisticalLine.labels]} />
             </View>
         </View>
     );

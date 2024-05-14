@@ -42,24 +42,33 @@ export default function Cart() {
     const [cartData, setCartData] = useState<ICartItem[]>([]);
     const [checkedItems, setCheckedItems] = useState<any>([]);
     const [total, setTotal] = useState<number>(0);
+    const [page, setPage] = useState<number>(1);
+    const [isLoad, setIsLoad] = useState<boolean>(true);
     console.log({ checkedItems });
-    const fetchData = async () => {
+    const fetchData = async (page: number) => {
         try {
-            const query = `?page=1&user_id=${currentData?.id}`;
+            const query = `?page=${page}&user_id=${currentData?.id}`;
             const response: any = await cart.get20LimitCart(query);
             if (response?.data?.err === 0) {
-                setCartData(response.data?.response?.rows);
+                if (response.data?.response?.rows?.length < 1) {
+                    setIsLoad(false);
+                } else {
+                    if (page === 1) setCartData(response.data?.response?.rows);
+                    else setCartData((prev) => [...prev, ...response.data.response.rows]);
+                }
             }
-        } catch (error) {}
+        } catch (error) {
+            setCartData([]);
+        }
     };
     useEffect(() => {
         dispatch(setTitleHeaderName('Giỏ hàng'));
-        if (currentData === null) return;
-        fetchData();
+        if (!currentData) return;
+        fetchData(page);
         return () => {
             dispatch(setTitleHeaderName('Trang chủ'));
         };
-    }, []);
+    }, [page]);
     const handleCheck = (item: ICartItem) => {
         if (checkedItems.includes(item)) {
             // Nếu đã chọn, loại bỏ khỏi danh sách
@@ -139,7 +148,9 @@ export default function Cart() {
                     text: 'Xác nhận',
                     onPress: () => {
                         deleteCart(id);
-                        fetchData();
+                        setPage(1);
+                        // fetchData();
+                        setIsLoad(true);
                         dispatch(getCountCart(currentData.id));
                     },
                 },
@@ -147,11 +158,23 @@ export default function Cart() {
             { cancelable: false },
         );
     };
+    const handleScroll = (event: any) => {
+        if (!isLoad) return;
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const isEndReached = layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
+
+        if (isEndReached) {
+            setPage((prev) => prev + 1);
+            // setIsLoad(true);
+        } else {
+            // setIsLoad(false);
+        }
+    };
     return (
         // <View>
         <View style={{ backgroundColor: '#ddd', flex: 1 }}>
             <View style={{ paddingBottom: 72, flex: 1 }}>
-                <ScrollView style={styles.wrapper}>
+                <ScrollView style={styles.wrapper} onScroll={handleScroll}>
                     {cartData.map((item, index) => (
                         <View style={styles.item} key={index}>
                             <View style={{ flexDirection: 'row' }}>

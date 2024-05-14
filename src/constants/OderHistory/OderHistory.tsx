@@ -2,7 +2,7 @@ import order from '@/src/api/order';
 import covertDateToString from '@/src/ultils/func/genDate';
 import genPrice from '@/src/ultils/func/genNumberPrice';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 interface IOrderItem {
     order_code: string;
@@ -29,11 +29,30 @@ export default function OderHistory({ navigation }: { navigation: any }) {
     };
     const [dataOrder, setDataOrder] = useState<IOrderItem[]>([]);
     const [page, setPage] = useState<number>(1);
+    const [mode, setMode] = useState<'cancel' | 'middle' | 'completed'>('middle');
     const [isLoad, setIsLoad] = useState<boolean>(true);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response: any = await order.getOrderItemToUser(page);
+                setPage(1);
+                setIsLoad(true);
+                const response: any = await order.getOrderItemToUser({ status: mode, page: 1 });
+                if (response?.data?.response?.rows) {
+                    setDataOrder((prev) => [...response.data.response.rows]);
+                }
+                if (response?.data?.response?.rows?.length === 0) {
+                    setIsLoad(false);
+                }
+            } catch (error) {
+                setDataOrder([]);
+            }
+        };
+        fetchData();
+    }, [mode]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response: any = await order.getOrderItemToUser({ status: mode, page });
                 if (response?.data?.response?.rows) {
                     setDataOrder((prev) => [...prev, ...response.data.response.rows]);
                 }
@@ -61,6 +80,44 @@ export default function OderHistory({ navigation }: { navigation: any }) {
     return (
         <ScrollView onScroll={handleScroll}>
             <View style={styles.container}>
+                <View style={styles.menu}>
+                    <ScrollView horizontal>
+                        <TouchableOpacity onPress={() => setMode('cancel')}>
+                            <View
+                                style={
+                                    mode === 'cancel'
+                                        ? [styles.menuItem, { borderBottomColor: 'red', borderBottomWidth: 2 }]
+                                        : styles.menuItem
+                                }
+                            >
+                                <Text>Đơn hủy</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setMode('middle')}>
+                            <View
+                                style={
+                                    mode === 'middle'
+                                        ? [styles.menuItem, { borderBottomColor: 'red', borderBottomWidth: 2 }]
+                                        : styles.menuItem
+                                }
+                            >
+                                <Text>Đã duyệt</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => setMode('completed')}>
+                            <View
+                                style={
+                                    mode === 'completed'
+                                        ? [styles.menuItem, { borderBottomColor: 'red', borderBottomWidth: 2 }]
+                                        : styles.menuItem
+                                }
+                            >
+                                <Text>Đã nhận</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </ScrollView>
+                </View>
                 <View style={styles.body}>
                     {dataOrder?.map((item, index) => (
                         <View style={styles.oder_item} key={index}>
@@ -122,7 +179,7 @@ export default function OderHistory({ navigation }: { navigation: any }) {
                     ))}
                 </View>
             </View>
-            {!isLoad ? (
+            {!isLoad || dataOrder?.length < 10 ? (
                 <Text
                     style={{
                         color: '#FF9900',
@@ -130,7 +187,7 @@ export default function OderHistory({ navigation }: { navigation: any }) {
                         textAlign: 'center',
                     }}
                 >
-                    Hết đơn hàng
+                    Hết
                 </Text>
             ) : (
                 <ActivityIndicator size="large" color="#FF9900" />
@@ -147,6 +204,15 @@ export default function OderHistory({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    menu: {
+        // backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#cccccc',
+    },
+    menuItem: {
+        padding: 8,
+        marginRight: 12,
     },
     body: {
         padding: 10,
@@ -170,6 +236,7 @@ const styles = StyleSheet.create({
         color: '#999999',
         fontWeight: 'bold',
     },
+
     wrapperRight: {
         maxWidth: 200,
         fontSize: 16,

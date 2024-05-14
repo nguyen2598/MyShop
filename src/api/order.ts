@@ -19,8 +19,8 @@ const order = {
             throw error;
         }
     },
-    async getOrderItemToUser(page: number) {
-        const url = `/api/order/get-order-item?page=${page}`;
+    async getOrderItemToUser(data: { page: number; status: string }) {
+        const url = `/api/order/get-order-item?page=${data.page}&status=${data.status}`;
         try {
             const response = await axiosClient.get(url);
             return response;

@@ -75,17 +75,19 @@ export default function ProductDetail() {
     const [productRelateData, setProductRelateData] = useState<IRelate[]>([]);
     useEffect(() => {
         const getData = async () => {
-            const response: any = await product.getProductDetail(id);
-            if (response?.data?.err === 0) {
-                setProductData(response?.data?.response);
-                const responseRelate: any = await product.getProductRelate(
-                    response?.data?.response?.categoryCode,
-                    response?.data?.response?.id,
-                );
-                if (responseRelate?.data?.err === 0) {
-                    setProductRelateData(responseRelate?.data?.response);
+            try {
+                const response: any = await product.getProductDetail(id);
+                if (response?.data?.err === 0) {
+                    setProductData(response?.data?.response);
+                    const responseRelate: any = await product.getProductRelate(
+                        response?.data?.response?.categoryCode,
+                        response?.data?.response?.id,
+                    );
+                    if (responseRelate?.data?.err === 0) {
+                        setProductRelateData(responseRelate?.data?.response);
+                    }
                 }
-            }
+            } catch (error) {}
         };
         getData();
 
@@ -179,11 +181,30 @@ export default function ProductDetail() {
         const update = async () => {
             try {
                 const response = await product.saleProduct({ sale: saleNumber }, id);
+                const getData = async () => {
+                    try {
+                        const response: any = await product.getProductDetail(id);
+                        if (response?.data?.err === 0) {
+                            setProductData(response?.data?.response);
+                            const responseRelate: any = await product.getProductRelate(
+                                response?.data?.response?.categoryCode,
+                                response?.data?.response?.id,
+                            );
+                            if (responseRelate?.data?.err === 0) {
+                                setProductRelateData(responseRelate?.data?.response);
+                            }
+                        }
+                    } catch (error) {}
+                };
+                getData();
+
+                scrollToTop();
             } catch (error) {
                 console.log('update error', error);
             }
         };
         update();
+        closeModal();
     };
 
     return (

@@ -34,7 +34,6 @@ const auth = {
             const response = await axiosClient.post(url, data);
             return response;
         } catch (error) {
-            console.log({ error });
             throw error;
         }
     },

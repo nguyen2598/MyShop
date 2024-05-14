@@ -81,6 +81,7 @@ export default function ProductManagement() {
                     console.log('up', { response });
                 }
             }
+            navigation.navigate('home');
         } catch (error) {
             console.log({ error });
         }
@@ -112,7 +113,6 @@ export default function ProductManagement() {
                                 // and retrieve the URL
                                 // Replace 'YOUR_CLOUD_NAME', 'YOUR_UPLOAD_PRESET', and 'YOUR_API_KEY'
                                 const cloudinaryUrl = await uploadToCloudinary(uri);
-                                setbug(cloudinaryUrl);
                                 return cloudinaryUrl;
                             })
                             ?.filter((item: any) => item),
@@ -340,6 +340,7 @@ export default function ProductManagement() {
                                                 marginLeft: 8,
                                                 marginRight: 8,
                                             }}
+                                            key={index}
                                         >
                                             <Image
                                                 key={index}

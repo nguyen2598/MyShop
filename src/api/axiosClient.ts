@@ -1,13 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-
+import { ENV } from '../ultils/environment';
 const axiosClient = axios.create({
     baseURL:
         // 'http://10.20.20.18:5000',
 
         // 'http://10.20.168.81:5000',
         // 'http://192.168.1.101:5000',
-        'http://192.168.1.198:5000',
+        `${ENV.urlServer}:5000`,
     headers: {
         'Content-Type': 'application/json',
     },

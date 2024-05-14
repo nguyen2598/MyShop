@@ -18,8 +18,13 @@ import {
     Statistical,
 } from './src/constants';
 import HomeStack from './src/constants/HomeStack/HomeStack';
-import { getCurrent } from './src/redux/slice';
-// global.socket = io('http://localhost:5000');
+import { getCurrent, getLogout, logout } from './src/redux/slice';
+import io from 'socket.io-client';
+import Global from './src/Class/Global';
+import { Alert } from 'react-native';
+import { ENV } from './src/ultils/environment';
+// const socket = io('http://localhost:5000');
+Global.setSocket(io(`${ENV.urlServer}:5000`));
 export default function Screen() {
     const roomRef: any = useRef(null);
     const Stack = createNativeStackNavigator();
@@ -34,28 +39,31 @@ export default function Screen() {
             clearTimeout(timeOut);
         };
     }, [isLoggedIn]);
+    useEffect(() => {
+        if (currentData === null || isLoggedIn === false) {
+            dispatch(getLogout(''));
+            dispatch(logout(''));
+        }
+        if (currentData?.id) {
+            if (roomRef?.current) {
+                leaveRoom(roomRef.current);
+            }
+            roomRef.current = currentData?.id;
+            joinRoom(currentData?.id);
+            console.log({ id: currentData?.id });
+        }
+    }, [currentData]);
+    const joinRoom = (id: string) => {
+        console.log({ joinRoom: id });
+        Global.getSocket?.emit('join-room', id);
+    };
+    const leaveRoom = (id: string) => {
+        Global.getSocket?.emit('leave-room', id);
+    };
     // useEffect(() => {
-    //     if (currentData === null || isLoggedIn === false) {
-    //         dispatch(getLogout(''));
-    //         dispatch(logout(''));
-    //     }
-    //     if (currentData?.id) {
-    //         if (roomRef?.current) {
-    //             leaveRoom(roomRef.current);
-    //         }
-    //         roomRef.current = currentData?.id;
-    //         joinRoom(currentData?.id);
-    //     }
-    // }, [currentData]);
-    // const joinRoom = (id: string) => {
-    //     socket.emit('join-room', id);
-    // };
-    // const leaveRoom = (id: string) => {
-    //     socket.emit('leave-room', id);
-    // };
-    // useEffect(() => {
-    //     socket.on('send_notification', (data) => {
+    //     Global.getSocket?.on('send_notification_oder_review', (data) => {
     //         console.log({ data });
+    //         Alert.alert(JSON.stringify(data));
     //     });
     // }, []);
 

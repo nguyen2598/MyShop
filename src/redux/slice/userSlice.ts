@@ -34,7 +34,6 @@ const userSlice = createSlice({
             })
             .addCase(getCurrent.fulfilled, (state, action) => {
                 if (action.payload?.err === 0) {
-                    console.log({ object: action.payload.response });
                     state.currentData = action.payload.response;
                     // state.msg = action.payload?.msg || '';
                 } else {

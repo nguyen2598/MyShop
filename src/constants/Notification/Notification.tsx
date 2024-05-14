@@ -1,34 +1,39 @@
-import React from 'react';
-import { FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 
 import { useNavigation } from '@react-navigation/native';
+import Global from '@/src/Class/Global';
+import covertDateToString from '@/src/ultils/func/genDate';
+import notification from '@/src/api/notification';
 
 export default function Notification() {
     const navigation: any = useNavigation();
     const handleTextLayout = (event: any) => {
         const { height } = event.nativeEvent.layout;
     };
-    const handleReview = (title: string, srcImage: string, id: number) => {
-        navigation.navigate('review', {});
+    const handleReview = () => {
+        navigation.navigate('list-review');
     };
-    const Item = ({ title, srcImage, id }: { title: string; srcImage: string; id: number }) => {
+
+    const Item = ({ type, content, date }: { type: string; content: string; date: string }) => {
         return (
-            <TouchableOpacity onPress={() => handleReview(title, srcImage, id)}>
+            <TouchableOpacity onPress={() => handleReview()}>
                 <View style={styles.itemwrapper}>
                     <View>
                         <Image
                             style={styles.itemimage}
                             source={{
-                                uri: srcImage,
+                                uri: 'https://www.pushengage.com/wp-content/uploads/2022/10/How-to-Add-a-Push-Notification-Icon.png',
                             }}
                         />
                     </View>
                     <View style={styles.bodyitem}>
                         <Text style={styles.itemtitle} numberOfLines={1}>
-                            {title}
+                            {type === 'send_notification_oder_review' ? 'Đánh giá sản phẩm' : 'Thông báo'}
                         </Text>
-                        <Text>bạn đã đặt hàng thành công vui lòng vào đánh giá</Text>
+                        <Text>{content}</Text>
+                        <Text>{covertDateToString(date)}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -38,33 +43,45 @@ export default function Notification() {
     const goToBack = () => {
         navigation.goBack();
     };
+    const [dataNotification, setDataNotification] = useState<{ type: string; content: string; date: string }[]>([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response: any = await notification.getNotification({ page: 1 });
+                if (response?.data?.response?.rows) {
+                    setDataNotification(response?.data?.response?.rows);
+                }
+            } catch (error) {
+                setDataNotification([]);
+            }
+        };
+        fetchData();
+    }, []);
+    useEffect(() => {
+        Global.getSocket?.on('send_notification_oder_review', (data) => {
+            console.log({ data });
+            // Alert.alert(JSON.stringify(data));
+            setDataNotification((prev) => [data, ...prev]);
+        });
+    }, []);
     return (
         <View style={styles.container}>
             <View style={styles.headerSearch}>
                 <TouchableOpacity onPress={goToBack}>
                     <IconAntDesign name="arrowleft" size={36} color="#28b08a" />
                 </TouchableOpacity>
-                <Text style={{ fontSize: 16 }}>Thanh toán</Text>
+                <Text style={{ fontSize: 16 }}>Thông báo</Text>
             </View>
             <View style={styles.body}>
-                <FlatList
-                    data={[
-                        {
-                            id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-                            title: 'First Item',
-                        },
-                        {
-                            id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-                            title: 'Second Item',
-                        },
-                        {
-                            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-                            title: 'Third Item',
-                        },
-                    ]}
-                    renderItem={({ item }) => <Item />}
-                    keyExtractor={(item) => item.id}
-                />
+                {dataNotification.length > 0 ? (
+                    <FlatList
+                        data={dataNotification}
+                        renderItem={({ item }) => <Item type={item.type} content={item.content} date={item.date} />}
+                        keyExtractor={(item, index) => item.type + index}
+                    />
+                ) : (
+                    <Text>Không có thông báo nào</Text>
+                )}
             </View>
         </View>
     );

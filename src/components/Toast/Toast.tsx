@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
         gap: 10,
         left: '50%', // Căn giữa theo trục X
         top: '50%', // Căn giữa theo trục Y
+        zIndex: 9999,
     },
     message: {
         color: 'white',

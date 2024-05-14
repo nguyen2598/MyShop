@@ -13,7 +13,6 @@ import { getLogout, logout } from '@/src/redux/slice';
 const CustomDrawerContent = (props: any) => {
     const { isLoggedIn } = useSelector((state: any) => state.auth);
     const { currentData } = useSelector((state: any) => state.user);
-    console.log({ currentData });
     const dispatch = useDispatch();
     return (
         <DrawerContentScrollView {...props}>
